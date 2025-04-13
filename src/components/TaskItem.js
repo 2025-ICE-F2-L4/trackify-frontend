@@ -56,16 +56,14 @@ const TaskItem = ({ task, index, isSelected, onToggle, onSelect}) => {
                 </span>
             </div>
 
-            {/* Daty */}
-            <div style={{fontSize: '16px', color: '#666', marginLeft: '39px'}}>
+            {/* Dates */}
+            <div style={{ fontSize: '16px', color: '#666', marginLeft: '39px' }}>
                 <div>Start: {formatDate(task.startedAt)}</div>
-                {task.completed && task.completedAt && (
-                    <div>Koniec: {formatDate(task.completedAt)}</div>
+                {task.completed && task.finishedAt && (
+                    <div>End: {formatDate(task.finishedAt)}</div>
                 )}
             </div>
-
         </li>
-
     );
 };
 

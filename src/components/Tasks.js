@@ -5,7 +5,7 @@ import TaskItem from './TaskItem';
 import api from "../api";
 
 export default function Tasks() {
-    const [tasks, settasks] = useState([]);
+    const [tasks, setTasks] = useState([]);
     const [newTask, setnewTask] = useState('');
     const [selectedTask, setselectedTask] = useState(null);
     const [editMode, setEditMode] = useState(false);
@@ -13,7 +13,8 @@ export default function Tasks() {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
     const [confirmDelete, setConfirmDelete] = useState(false);
-
+    const [editingName, setEditingName] = useState(false);
+    const [editedName, setEditedName] = useState('');
     useEffect(() => {
         fetchTasks();
     }, []);
@@ -23,15 +24,22 @@ export default function Tasks() {
         api.get('/task')
             .then((response) => {
                 if (response.data && Array.isArray(response.data.tasks)) {
-                    settasks(response.data.tasks);
+                    // Map tasks to ensure "completed" is accurate based on finishedAt
+                    const updatedTasks = response.data.tasks.map(task => ({
+                        ...task,
+                        completed: !!task.finishedAt, // completed = true if finishedAt exists
+                    }));
+                    setTasks(updatedTasks);
                 } else {
-                    settasks([]);
+                    setTasks([]);
                 }
             })
             .catch((error) =>
-                setError(error?.response?.data?.message || 'Failed to fetch tasks'))
+                setError(error?.response?.data?.message || 'Failed to fetch tasks')
+            )
             .finally(() => setIsLoading(false));
     };
+
 
     const handleAddTask = async () => {
         if (newTask.trim() !== '') {
@@ -39,7 +47,7 @@ export default function Tasks() {
             try {
                 const response = await api.post('/task', payload);
                 const createdTask = response.data;
-                settasks([...tasks, createdTask]);
+                setTasks([...tasks, createdTask]);
                 setnewTask('');
                 fetchTasks();
             } catch (error) {
@@ -47,17 +55,40 @@ export default function Tasks() {
             }
         }
     };
+    const handleToggleTask = async (index) => {
+        const task = tasks[index];
+        const isNowCompleted = !task.completed;
+        try {
+            await api.put(`/task/${task.id_task}`, {
+                isFinished: isNowCompleted ? 1 : 0,
+            });
 
-    const handleToggleTask = (index) => {
-        const updatedTasks = tasks.map((task, i) =>
-            i === index ? { ...task, completed: !task.completed } : task
-        );
-        settasks(updatedTasks);
-        // If the currently selected task is the one that was toggled, update its state too.
-        if (selectedTask && selectedTask.index === index) {
-            setselectedTask({ ...updatedTasks[index], index });
+            const updatedTasks = tasks.map((t, i) => {
+                if (i === index) {
+                    return {
+                        ...t,
+                        completed: isNowCompleted,
+                        finishedAt: isNowCompleted ? new Date().toISOString() : null,
+                    };
+                }
+                return t;
+            });
+
+            setTasks(updatedTasks);
+
+            if (selectedTask?.index === index) {
+                setselectedTask({
+                    ...updatedTasks[index],
+                    index,
+                });
+            }
+        } catch (error) {
+            setError(error?.response?.data?.message || 'Error updating task status');
         }
     };
+
+
+
 
     const handleSelectTask = (index) => {
         setselectedTask({ ...tasks[index], index });
@@ -68,25 +99,14 @@ export default function Tasks() {
 
     const handleCloseDetails = () => {
         setselectedTask(null);
-        setEditMode(false);
-        setConfirmDelete(false);
+
     };
 
-    const handleCompleteTask = () => {
-        if (selectedTask) {
-            handleToggleTask(selectedTask.index);
-            const updated = {
-                ...selectedTask,
-                completed: !selectedTask.completed,
-            };
-            setselectedTask(updated);
-        }
-    };
 
     const handleSaveDescription = () => {
         const updatedTasks = [...tasks];
         updatedTasks[selectedTask.index].description = editedDescription;
-        settasks(updatedTasks);
+        setTasks(updatedTasks);
         setselectedTask({ ...selectedTask, description: editedDescription });
         setEditMode(false);
     };
@@ -94,7 +114,7 @@ export default function Tasks() {
     const handleDateChange = (date, field) => {
         const updatedTasks = [...tasks];
         updatedTasks[selectedTask.index][field] = date;
-        settasks(updatedTasks);
+        setTasks(updatedTasks);
         setselectedTask({ ...selectedTask, [field]: date });
     };
 
@@ -113,7 +133,7 @@ export default function Tasks() {
             console.log("Deleting task with id:", taskToDelete.id_task);
             await api.delete(`/task/${taskToDelete.id_task}`);
             const updatedTasks = tasks.filter((_, i) => i !== index);
-            settasks(updatedTasks);
+            setTasks(updatedTasks);
             if (selectedTask?.index === index) {
                 setselectedTask(null);
             }
@@ -122,7 +142,6 @@ export default function Tasks() {
         }
     };
 
-    // New function to duplicate the selected task.
     const handleDuplicateTask = async () => {
         if (selectedTask) {
             // Remove any existing " (number)" from the end of the name
@@ -140,11 +159,29 @@ export default function Tasks() {
             try {
                 const response = await api.post('/task', payload);
                 const createdTask = response.data;
-                settasks([...tasks, createdTask]);
+                setTasks([...tasks, createdTask]);
                 fetchTasks();
             } catch (error) {
                 setError(error?.response?.data?.message || 'Error duplicating task');
             }
+        }
+    };
+
+    const handleSaveName = async () => {
+        try {
+            await api.put(
+                `/task/${selectedTask.id_task}`,
+                { name: editedName }
+            );
+            // Update state locally (update the selected task and tasks array)
+            const updatedTasks = [...tasks];
+            updatedTasks[selectedTask.index].name = editedName;
+            setTasks(updatedTasks);
+            setselectedTask({ ...selectedTask, name: editedName });
+            setEditingName(false);
+            fetchTasks();
+        } catch (error) {
+            setError(error?.response?.data?.message || 'Error updating task name');
         }
     };
 
@@ -235,10 +272,65 @@ export default function Tasks() {
                         overflowY: 'auto',
                     }}
                 >
-                    <h1 style={{ fontSize: '40px', marginBottom: '30px', color: '#333', fontWeight: '600' }}>Goal Description</h1>
-                    <h2 style={{ fontSize: '32px', marginBottom: '30px', color: '#333', fontWeight: '500' }}>{selectedTask.name}</h2>
+                    <h1 style={{fontSize: '40px', marginBottom: '30px', color: '#333', fontWeight: '600'}}>Goal
+                        Description</h1>
+                    <div style={{display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '30px'}}>
+                        {editingName ? (
+                            <>
+                                <input
+                                    type="text"
+                                    value={editedName}
+                                    onChange={(e) => setEditedName(e.target.value)}
+                                    style={{
+                                        fontSize: '32px',
+                                        padding: '5px 10px',
+                                        border: '1px solid #ddd',
+                                        borderRadius: '6px'
+                                    }}
+                                />
+                                <button
+                                    onClick={handleSaveName}
+                                    style={{
+                                        padding: '8px 16px',
+                                        fontSize: '20px',
+                                        backgroundColor: '#4CAF50',
+                                        color: 'white',
+                                        border: 'none',
+                                        borderRadius: '6px',
+                                        cursor: 'pointer',
+                                        fontWeight: 'bold'
+                                    }}
+                                >
+                                    Save
+                                </button>
+                            </>
+                        ) : (
+                            <>
+                                <h2 style={{fontSize: '32px', margin: 0, color: '#333', fontWeight: '500'}}>
+                                    {selectedTask.name}
+                                </h2>
+                                <button
+                                    onClick={() => {
+                                        setEditingName(true);
+                                        setEditedName(selectedTask.name);
+                                    }}
+                                    style={{
+                                        background: 'none',
+                                        border: 'none',
+                                        cursor: 'pointer',
+                                        fontSize: '24px',
+                                        color: '#666'
+                                    }}
+                                    title="Edit task name"
+                                >
+                                    🖉
+                                </button>
+                            </>
+                        )}
+                    </div>
+
                     {editMode ? (
-                        <div style={{ marginBottom: '40px' }}>
+                        <div style={{marginBottom: '40px'}}>
                             <textarea
                                 value={editedDescription}
                                 onChange={(e) => setEditedDescription(e.target.value)}
@@ -289,9 +381,12 @@ export default function Tasks() {
                             {selectedTask.description || 'Click to add description...'}
                         </p>
                     )}
-                    <div style={{ display: 'flex', gap: '40px', marginBottom: '40px', flexWrap: 'wrap' }}>
-                        <div style={{ minWidth: '300px' }}>
-                            <strong style={{ display: 'block', fontSize: '24px', marginBottom: '15px' }}>Start Date</strong>
+                    <div style={{display: 'flex', gap: '20px', marginBottom: '40px', flexWrap: 'wrap'}}>
+                        {/* Start Date */}
+                        <div style={{minWidth: '300px'}}>
+                            <strong style={{display: 'block', fontSize: '24px', marginBottom: '15px'}}>
+                                Start Date
+                            </strong>
                             <DatePicker
                                 selected={new Date(selectedTask.startedAt)}
                                 onChange={(date) => handleDateChange(date, 'startedAt')}
@@ -300,23 +395,29 @@ export default function Tasks() {
                                 timeIntervals={15}
                                 dateFormat="HH:mm dd-MM-yyyy"
                                 customInput={
-                                    <div style={{
-                                        padding: '12px',
-                                        border: '1px solid #ddd',
-                                        borderRadius: '6px',
-                                        fontSize: '20px',
-                                        cursor: 'pointer',
-                                        backgroundColor: '#f9f9f9'
-                                    }}>
+                                    <div
+                                        style={{
+                                            padding: '12px',
+                                            border: '1px solid #ddd',
+                                            borderRadius: '6px',
+                                            fontSize: '20px',
+                                            cursor: 'pointer',
+                                            backgroundColor: '#f9f9f9',
+                                        }}
+                                    >
                                         {formatDate(new Date(selectedTask.startedAt))}
                                     </div>
                                 }
                             />
                         </div>
                     </div>
-                    <div style={{ display: 'flex', gap: '20px', marginTop: '40px', flexWrap: 'wrap' }}>
+                    <div style={{marginTop: '40px', display: 'flex', gap: '20px', flexWrap: 'wrap'}}>
                         <button
-                            onClick={handleCompleteTask}
+                            onClick={() => {
+                                if (selectedTask) {
+                                    handleToggleTask(selectedTask.index);
+                                }
+                            }}
                             style={{
                                 padding: '15px 30px',
                                 fontSize: '22px',
@@ -376,7 +477,7 @@ export default function Tasks() {
                         >
                             {confirmDelete ? 'Are you sure?' : '🗑 Delete'}
                         </button>
-                        {/* New Duplicate Task Button */}
+                        {/* Duplicate Task Button */}
                         <button
                             onClick={handleDuplicateTask}
                             style={{

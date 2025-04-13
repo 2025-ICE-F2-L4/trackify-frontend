@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import { Container, Box, Typography, TextField, Button, Link, Alert } from '@mui/material';
 import { useRedirect } from "../navigation/RedirectHandlers";
+import api from "../api";
 
 export default function Register() {
     const handleRedirectToLogin = useRedirect('/Login');
@@ -45,16 +45,21 @@ export default function Register() {
         try {
             setIsSubmitting(true);
             // Send form data to the backend API using the /auth/register endpoint
-            const response = await axios.post('https://iobackend.onrender.com/auth/register', {
+            // const response = await axios.post('/auth/register', {
+            //     username: formData.username,
+            //     password: formData.password,
+            //     email: formData.email,
+            // }, {
+            //     headers: {
+            //         'Content-Type': 'application/json'
+            //     },
+            // });
+            const response = await api.post('/auth/register', {
                 username: formData.username,
                 password: formData.password,
                 email: formData.email,
-            }, {
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                timeout: 10000,
             });
+
             console.log('Response from server:', response.data);
             // Redirect to the profile page after successful registration
             handleRedirectToProfile();

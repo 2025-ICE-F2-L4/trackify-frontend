@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Container, Box, Typography, TextField, Button, Link, Alert } from '@mui/material';
 import { useRedirect } from '../navigation/RedirectHandlers';
 import { useUser } from '../context/UserContext';
+import axios from "axios";
+import api from "../api";
 
 export default function Login() {
     const { loginUser } = useUser();
@@ -32,26 +34,12 @@ export default function Login() {
         }
 
         try {
-            const response = await fetch('https://iobackend.onrender.com/auth/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData),
+            const response = await api.post('/auth/login', {
+                username: formData.username,
+                password: formData.password,
             });
 
-            if (!response.ok) {
-                setError('Invalid credentials. Please try again.');
-                return;
-            }
-
-            const data = await response.json();
-
-            // Save token to localStorage
-            localStorage.setItem('authToken', data.token);
-
-            // Optionally, store user data if needed
-            loginUser(data);
-
-            // Redirect after login
+            localStorage.setItem('authToken', response.data.token);
             handleRedirectToProfile();
         } catch (err) {
             console.error('Login error:', err);

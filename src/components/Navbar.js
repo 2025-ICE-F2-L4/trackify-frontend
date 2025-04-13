@@ -12,7 +12,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import { useRedirect } from "../navigation/RedirectHandlers";
 
 export default function Navbar() {
-    const handleRedirectToHome = useRedirect("/home");
+    const handleRedirectToTasks = useRedirect("/tasks");
     const handleRedirectToProfile = useRedirect("/profile");
     const handleRedirectToLogout = useRedirect("/");
 
@@ -64,7 +64,7 @@ export default function Navbar() {
                             "&:hover": { color: "var(--hover-title)" },
                             display: { xs: 'none', sm: 'flex' },
                         }}
-                        onClick={handleRedirectToHome}
+                        onClick={handleRedirectToTasks}
                     >
                         Trackify
                     </Typography>
@@ -79,17 +79,17 @@ export default function Navbar() {
                             "&:hover": { color: "var(--hover-title)" },
                             display: { xs: 'flex', sm: 'none' },
                         }}
-                        onClick={handleRedirectToHome}
+                        onClick={handleRedirectToTasks}
                     >
                         Trackify
                     </Typography>
 
                     <Box sx={{ ml: "auto", display: { xs: "none", md: "flex" }, gap: 2 }}>
                         <Button
-                            onClick={handleRedirectToHome}
+                            onClick={handleRedirectToTasks}
                             sx={navButtonStyle}
                         >
-                            Home
+                            Tasks
                         </Button>
 
                         <Button
@@ -155,7 +155,7 @@ export default function Navbar() {
                         >
                             <MenuItem
                                 onClick={() => {
-                                    handleRedirectToHome();
+                                    handleRedirectToTasks();
                                     handleCloseNavMenu();
                                 }}
                                 sx={menuItemStyle}

@@ -1,9 +1,9 @@
 import './App.css';
 import {BrowserRouter, useLocation} from "react-router-dom";
 import AppRoutes from "./navigation/AppRoutes";
-import Navbar from "./assets/Navbar";
+import Navbar from "./components/Navbar";
 import {UserProvider} from "./context/UserContext";
-import LandingNavbar from "./assets/LandingNavbar";
+import LandingNavbar from "./components/LandingNavbar";
 
 function AppContent() {
     const location = useLocation();

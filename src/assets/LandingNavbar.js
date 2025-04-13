@@ -10,11 +10,13 @@ import Button from "@mui/material/Button";
 import MenuItem from "@mui/material/MenuItem";
 import MenuIcon from "@mui/icons-material/Menu";
 import { useRedirect } from "../navigation/RedirectHandlers";
+import { useUser } from "../context/UserContext";
 
-export default function Navbar() {
-    const handleRedirectToHome = useRedirect("/home");
-    const handleRedirectToProfile = useRedirect("/profile");
-    const handleRedirectToLogout = useRedirect("/");
+export default function LandingNavbar() {
+    const handleRedirectToRegister = useRedirect("/register");
+    const handleRedirectToLogin = useRedirect("/login");
+    const handleRedirectToHome = useRedirect("/profile");
+    const { user } = useUser();
 
     const [anchorElNav, setAnchorElNav] = React.useState(null);
 
@@ -26,23 +28,6 @@ export default function Navbar() {
         setAnchorElNav(null);
     };
 
-    const navButtonStyle = {
-        my: 2,
-        color: "white",
-        backgroundColor: "transparent",
-        padding: "8px 16px",
-        borderRadius: "8px",
-        "&:hover": {
-            backgroundColor: "rgba(255, 255, 255, 0.2)",
-        },
-    };
-
-    const menuItemStyle = {
-        "&:hover": {
-            backgroundColor: "rgba(255, 255, 255, 0.1)",
-        },
-    };
-
     return (
         <AppBar
             position="static"
@@ -52,70 +37,55 @@ export default function Navbar() {
                 boxShadow: "none",
             }}
         >
-            <Container maxWidth="xl" sx={{ padding: "0 20px" }}>
+            <Container maxWidth="xl" sx={{ padding: "0 20px" }}> {/* Prevents sticking out */}
                 <Toolbar disableGutters>
+                    {/* Desktop Logo/Title */}
                     <Typography
                         variant="h6"
                         noWrap
                         component="div"
                         sx={{
-                            mr: 2,
                             cursor: "pointer",
                             "&:hover": { color: "var(--hover-title)" },
-                            display: { xs: 'none', sm: 'flex' },
                         }}
                         onClick={handleRedirectToHome}
                     >
                         Trackify
                     </Typography>
 
-                    <Typography
-                        variant="h6"
-                        noWrap
-                        component="div"
-                        sx={{
-                            flexGrow: 1,
-                            cursor: "pointer",
-                            "&:hover": { color: "var(--hover-title)" },
-                            display: { xs: 'flex', sm: 'none' },
-                        }}
-                        onClick={handleRedirectToHome}
-                    >
-                        Trackify
-                    </Typography>
-
+                    {/* Push buttons to the right */}
                     <Box sx={{ ml: "auto", display: { xs: "none", md: "flex" }, gap: 2 }}>
                         <Button
-                            onClick={handleRedirectToHome}
-                            sx={navButtonStyle}
+                            onClick={handleRedirectToLogin}
+                            sx={{
+                                my: 2,
+                                color: "white",
+                                backgroundColor: "transparent", // New distinct color
+                                padding: "8px 16px",
+                                borderRadius: "8px",
+                                "&:hover": {
+                                    backgroundColor: "rgba(255, 255, 255, 0.2)", // Darker shade for hover
+                                },
+                            }}
                         >
-                            Home
+                            Login
                         </Button>
-
                         <Button
-                            onClick={handleRedirectToProfile}
-                            sx={navButtonStyle}
-                        >
-                            Profile
-                        </Button>
-
-                        <Button
-                            onClick={handleRedirectToLogout}
+                            onClick={handleRedirectToRegister}
                             sx={{
                                 my: 2,
                                 color: "white",
                                 backgroundColor: "var(--accent-color)",
-                                padding: "8px 16px",
-                                borderRadius: "8px",
                                 "&:hover": {
                                     backgroundColor: "#E3A02D",
                                 },
                             }}
                         >
-                            Logout
+                            Register
                         </Button>
                     </Box>
 
+                    {/* Mobile Menu Icon */}
                     <Box sx={{ display: { xs: "flex", md: "none" }, ml: "auto" }}>
                         <IconButton
                             size="large"
@@ -137,50 +107,41 @@ export default function Navbar() {
                             anchorEl={anchorElNav}
                             anchorOrigin={{
                                 vertical: "bottom",
-                                horizontal: "right",
+                                horizontal: "left",
                             }}
                             keepMounted
                             transformOrigin={{
                                 vertical: "top",
-                                horizontal: "right",
+                                horizontal: "left",
                             }}
                             open={Boolean(anchorElNav)}
                             onClose={handleCloseNavMenu}
-                            sx={{
-                                "& .MuiPaper-root": {
-                                    backgroundColor: "var(--primary-bg)",
-                                    color: "white",
-                                },
-                            }}
                         >
                             <MenuItem
                                 onClick={() => {
-                                    handleRedirectToHome();
+                                    handleRedirectToRegister();
                                     handleCloseNavMenu();
                                 }}
-                                sx={menuItemStyle}
+                                sx={{
+                                    "&:hover": {
+                                        backgroundColor: "#FFF8E1", // Light warm off-white
+                                    },
+                                }}
                             >
-                                <Typography textAlign="center">Home</Typography>
+                                <Typography textAlign="center">Register</Typography>
                             </MenuItem>
-
                             <MenuItem
                                 onClick={() => {
-                                    handleRedirectToProfile();
+                                    handleRedirectToLogin();
                                     handleCloseNavMenu();
                                 }}
-                                sx={menuItemStyle}
-                            >
-                                <Typography textAlign="center">Profile</Typography>
-                            </MenuItem>
-
-                            <MenuItem
-                                onClick={() => {
-                                    handleRedirectToLogout();
-                                    handleCloseNavMenu();
+                                sx={{
+                                    "&:hover": {
+                                        backgroundColor: "#FFF8E1",
+                                    },
                                 }}
-                                sx={menuItemStyle}
                             >
-                                <Typography textAlign="center">Logout</Typography>
+                                <Typography textAlign="center">Login</Typography>
                             </MenuItem>
                         </Menu>
                     </Box>

@@ -18,7 +18,7 @@ export default function Home() {
             setTodos([...todos, {
                 text: newTodo,
                 completed: false,
-                description: "Click to edit description...",
+                description: "",
                 startDate: now,
                 endDate: defaultEndDate
             }]);
@@ -212,20 +212,21 @@ export default function Home() {
 
                     {editMode ? (
                         <div style={{ marginBottom: '40px' }}>
-                            <textarea
-                                value={editedDescription}
-                                onChange={(e) => setEditedDescription(e.target.value)}
-                                style={{
-                                    width: '100%',
-                                    minHeight: '150px',
-                                    padding: '15px',
-                                    fontSize: '20px',
-                                    border: '1px solid #ddd',
-                                    borderRadius: '6px',
-                                    outline: 'none',
-                                    resize: 'vertical'
-                                }}
-                            />
+        <textarea
+            value={editedDescription}
+            onChange={(e) => setEditedDescription(e.target.value)}
+            placeholder="Click to edit a description"
+            style={{
+                width: '100%',
+                minHeight: '150px',
+                padding: '15px',
+                fontSize: '20px',
+                border: '1px solid #ddd',
+                borderRadius: '6px',
+                outline: 'none',
+                resize: 'vertical'
+            }}
+        />
                             <button
                                 onClick={handleSaveDescription}
                                 style={{
@@ -244,22 +245,25 @@ export default function Home() {
                             </button>
                         </div>
                     ) : (
+                        // Display mode remains as before:
                         <p
                             onClick={() => setEditMode(true)}
                             style={{
                                 fontSize: '24px',
                                 lineHeight: '1.6',
                                 marginBottom: '40px',
-                                color: '#555',
+                                color: selectedTodo.description ? '#555' : '#aaa',
                                 cursor: 'pointer',
                                 padding: '15px',
                                 backgroundColor: '#f9f9f9',
-                                borderRadius: '6px'
+                                borderRadius: '6px',
+                                fontStyle: selectedTodo.description ? 'normal' : 'italic'
                             }}
                         >
-                            {selectedTodo.description}
+                            {selectedTodo.description || "Click to add a description..."}
                         </p>
                     )}
+
 
                     <div style={{
                         display: 'flex',
@@ -267,7 +271,7 @@ export default function Home() {
                         marginBottom: '40px',
                         flexWrap: 'wrap'
                     }}>
-                        <div style={{ minWidth: '300px' }}>
+                        <div style={{minWidth: '300px'}}>
                             <strong style={{
                                 display: 'block',
                                 fontSize: '24px',

@@ -11,7 +11,7 @@ const formatDate = (isoString) => {
     });
 };
 
-const TaskItem = ({ todo, index, isSelected, onToggle, onSelect}) => {
+const TaskItem = ({ task, index, isSelected, onToggle, onSelect}) => {
     return (
         <li
             onClick={() => onSelect(index)}
@@ -31,7 +31,7 @@ const TaskItem = ({ todo, index, isSelected, onToggle, onSelect}) => {
             <div style={{display: 'flex', alignItems: 'center', width: '100%'}}>
                 <input
                     type="checkbox"
-                    checked={todo.completed}
+                    checked={task.completed}
                     onChange={(e) => {
                         e.stopPropagation();
                         onToggle(index);
@@ -47,20 +47,20 @@ const TaskItem = ({ todo, index, isSelected, onToggle, onSelect}) => {
                 />
                 <span
                     style={{
-                        textDecoration: todo.completed ? 'line-through' : 'none',
-                        color: todo.completed ? '#888' : '#333',
+                        textDecoration: task.completed ? 'line-through' : 'none',
+                        color: task.completed ? '#888' : '#333',
                         flexGrow: 1,
                     }}
                 >
-                    {todo.name}
+                    {task.name}
                 </span>
             </div>
 
             {/* Daty */}
             <div style={{fontSize: '16px', color: '#666', marginLeft: '39px'}}>
-                <div>Start: {formatDate(todo.startedAt)}</div>
-                {todo.completed && todo.completedAt && (
-                    <div>Koniec: {formatDate(todo.completedAt)}</div>
+                <div>Start: {formatDate(task.startedAt)}</div>
+                {task.completed && task.completedAt && (
+                    <div>Koniec: {formatDate(task.completedAt)}</div>
                 )}
             </div>
 

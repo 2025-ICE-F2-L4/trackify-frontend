@@ -1,25 +1,34 @@
-import logo from './logo.svg';
 import './App.css';
+import {BrowserRouter, useLocation} from "react-router-dom";
+import AppRoutes from "./navigation/AppRoutes";
+import Navbar from "./assets/Navbar";
+import {UserProvider} from "./context/UserContext";
+import LandingNavbar from "./assets/LandingNavbar";
+
+function AppContent() {
+    const location = useLocation();
+
+    const landingRoutes = ['/', '/login', '/register'];
+    const isLandingNavbarRoute = landingRoutes.includes(location.pathname);
+
+    return (
+        <>
+            {isLandingNavbarRoute ? <LandingNavbar /> : <Navbar />}
+            <AppRoutes />
+        </>
+    );
+}
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    return (
+        <div className="App">
+            <BrowserRouter>
+                <UserProvider>
+                    <AppContent />
+                </UserProvider>
+            </BrowserRouter>
+        </div>
+    );
 }
 
 export default App;

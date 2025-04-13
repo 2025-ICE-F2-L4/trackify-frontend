@@ -15,7 +15,7 @@ import { useUser } from "../context/UserContext";
 export default function LandingNavbar() {
     const handleRedirectToRegister = useRedirect("/register");
     const handleRedirectToLogin = useRedirect("/login");
-    const handleRedirectToHome = useRedirect("/profile");
+    const handleRedirectToLanding = useRedirect("/");
     const { user } = useUser();
 
     const [anchorElNav, setAnchorElNav] = React.useState(null);
@@ -48,7 +48,7 @@ export default function LandingNavbar() {
                             cursor: "pointer",
                             "&:hover": { color: "var(--hover-title)" },
                         }}
-                        onClick={handleRedirectToHome}
+                        onClick={handleRedirectToLanding}
                     >
                         Trackify
                     </Typography>

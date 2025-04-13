@@ -1,15 +1,11 @@
 import React, { useState } from "react";
 import { useUser } from "../context/UserContext";
-import { // TAK TO MUSI BYC CALE :V
+import {
     Container,
     Box,
     Typography,
     TextField,
     Button,
-    List,
-    ListItem,
-    ListItemText,
-    Divider,
     Alert,
     Avatar,
     IconButton
@@ -23,7 +19,6 @@ export default function Profile() {
         email: "jan.kowalski@example.com",
         city: "Warszawa",
         phone: "123-456-789",
-        preferences: "Pies, średni, wysoka aktywność",
         profileImage: '/profpic.png' // Ścieżka do pliku w folderze public
     });
     const [isEditing, setIsEditing] = useState(false);
@@ -54,12 +49,6 @@ export default function Profile() {
         setIsEditing(false);
         setUser(profile);
     };
-
-    const adoptionApplications = [
-        { name: "Reksio", status: "wysłano", date: "29 marca 2025" },
-        { name: "Kapsel", status: "zaakceptowano", date: "15 marca 2025" },
-        { name: "Burek", status: "odrzucono", date: "2 marca 2025" }
-    ];
 
     return (
         <Container maxWidth="sm">
@@ -156,16 +145,6 @@ export default function Profile() {
                             value={profile.phone}
                             onChange={handleChange}
                         />
-                        <TextField
-                            margin="normal"
-                            fullWidth
-                            label="Preferencje adopcyjne"
-                            name="preferences"
-                            value={profile.preferences}
-                            onChange={handleChange}
-                            multiline
-                            rows={3}
-                        />
 
                         <Button
                             type="button"
@@ -192,12 +171,11 @@ export default function Profile() {
                             {profile.email}
                         </Typography>
 
-                        <Divider sx={{ my: 2 }} />
+
 
                         <Typography variant="h6" gutterBottom>Dane osobowe</Typography>
                         <Typography variant="body1" gutterBottom>Miasto: {profile.city}</Typography>
                         <Typography variant="body1" gutterBottom>Telefon: {profile.phone}</Typography>
-                        <Typography variant="body1" gutterBottom>Preferencje: {profile.preferences}</Typography>
 
                         <Button
                             fullWidth
@@ -217,36 +195,6 @@ export default function Profile() {
                         </Button>
                     </Box>
                 )}
-            </Box>
-
-            {/* Sekcja wniosków adopcyjnych */}
-            <Box
-                sx={{
-                    marginTop: 3,
-                    marginBottom: 8,
-                    padding: 4,
-                    backgroundColor: 'background.paper',
-                    boxShadow: 3,
-                    borderRadius: 2,
-                }}
-            >
-                <Typography variant="h5" align="center" gutterBottom>
-                    Moje wnioski o adopcję
-                </Typography>
-
-                <List sx={{ width: '100%' }}>
-                    {adoptionApplications.map((app, index) => (
-                        <React.Fragment key={index}>
-                            <ListItem alignItems="flex-start">
-                                <ListItemText
-                                    primary={app.name}
-                                    secondary={`Status: ${app.status} (${app.date})`}
-                                />
-                            </ListItem>
-                            {index < adoptionApplications.length - 1 && <Divider />}
-                        </React.Fragment>
-                    ))}
-                </List>
             </Box>
         </Container>
     );

@@ -10,13 +10,12 @@ import Button from "@mui/material/Button";
 import MenuItem from "@mui/material/MenuItem";
 import MenuIcon from "@mui/icons-material/Menu";
 import { useRedirect } from "../navigation/RedirectHandlers";
-import { useUser } from "../context/UserContext";
 
 export default function Navbar() {
     const handleRedirectToRegister = useRedirect("/register");
     const handleRedirectToLogin = useRedirect("/login");
-    const handleRedirectToHome = useRedirect("/profile");
-    const { user } = useUser();
+    const handleRedirectToHome = useRedirect("/");
+    const handleRedirectToProfile = useRedirect("/profile");
 
     const [anchorElNav, setAnchorElNav] = React.useState(null);
 
@@ -28,6 +27,24 @@ export default function Navbar() {
         setAnchorElNav(null);
     };
 
+    const navButtonStyle = {
+        my: 2,
+        color: "white",
+        backgroundColor: "transparent",
+        padding: "8px 16px",
+        borderRadius: "8px",
+        "&:hover": {
+            backgroundColor: "rgba(255, 255, 255, 0.2)",
+        },
+    };
+
+    const menuItemStyle = {
+        "&:hover": {
+            backgroundColor: "rgba(255, 255, 255, 0.1)",
+        },
+    };
+
+
     return (
         <AppBar
             position="static"
@@ -37,36 +54,55 @@ export default function Navbar() {
                 boxShadow: "none",
             }}
         >
-            <Container maxWidth="xl" sx={{ padding: "0 20px" }}> {/* Prevents sticking out */}
+            <Container maxWidth="xl" sx={{ padding: "0 20px" }}>
                 <Toolbar disableGutters>
-                    {/* Desktop Logo/Title */}
                     <Typography
                         variant="h6"
                         noWrap
                         component="div"
                         sx={{
+                            mr: 2,
                             cursor: "pointer",
                             "&:hover": { color: "var(--hover-title)" },
+                            display: { xs: 'none', sm: 'flex' },
                         }}
                         onClick={handleRedirectToHome}
                     >
-                        Szczęśliwe Łapki
+                        Trackify
                     </Typography>
 
-                    {/* Push buttons to the right */}
+                    <Typography
+                        variant="h6"
+                        noWrap
+                        component="div"
+                        sx={{
+                            flexGrow: 1,
+                            cursor: "pointer",
+                            "&:hover": { color: "var(--hover-title)" },
+                            display: { xs: 'flex', sm: 'none' },
+                        }}
+                        onClick={handleRedirectToHome}
+                    >
+                        Trackify
+                    </Typography>
+
                     <Box sx={{ ml: "auto", display: { xs: "none", md: "flex" }, gap: 2 }}>
                         <Button
+                            onClick={handleRedirectToHome}
+                            sx={navButtonStyle}
+                        >
+                            Home
+                        </Button>
+
+                        <Button
+                            onClick={handleRedirectToProfile}
+                            sx={navButtonStyle}
+                        >
+                            Profile
+                        </Button>
+                        <Button
                             onClick={handleRedirectToLogin}
-                            sx={{
-                                my: 2,
-                                color: "white",
-                                backgroundColor: "transparent", // New distinct color
-                                padding: "8px 16px",
-                                borderRadius: "8px",
-                                "&:hover": {
-                                    backgroundColor: "rgba(255, 255, 255, 0.2)", // Darker shade for hover
-                                },
-                            }}
+                            sx={navButtonStyle}
                         >
                             Login
                         </Button>
@@ -76,6 +112,8 @@ export default function Navbar() {
                                 my: 2,
                                 color: "white",
                                 backgroundColor: "var(--accent-color)",
+                                padding: "8px 16px",
+                                borderRadius: "8px",
                                 "&:hover": {
                                     backgroundColor: "#E3A02D",
                                 },
@@ -85,7 +123,6 @@ export default function Navbar() {
                         </Button>
                     </Box>
 
-                    {/* Mobile Menu Icon */}
                     <Box sx={{ display: { xs: "flex", md: "none" }, ml: "auto" }}>
                         <IconButton
                             size="large"
@@ -107,39 +144,56 @@ export default function Navbar() {
                             anchorEl={anchorElNav}
                             anchorOrigin={{
                                 vertical: "bottom",
-                                horizontal: "left",
+                                horizontal: "right",
                             }}
                             keepMounted
                             transformOrigin={{
                                 vertical: "top",
-                                horizontal: "left",
+                                horizontal: "right",
                             }}
                             open={Boolean(anchorElNav)}
                             onClose={handleCloseNavMenu}
+                            sx={{
+                                "& .MuiPaper-root": {
+                                    backgroundColor: "var(--primary-bg)",
+                                    color: "white",
+                                },
+                            }}
                         >
+                            <MenuItem
+                                onClick={() => {
+                                    handleRedirectToHome();
+                                    handleCloseNavMenu();
+                                }}
+                                sx={menuItemStyle}
+                            >
+                                <Typography textAlign="center">Home</Typography>
+                            </MenuItem>
+
+                            <MenuItem
+                                onClick={() => {
+                                    handleRedirectToProfile();
+                                    handleCloseNavMenu();
+                                }}
+                                sx={menuItemStyle}
+                            >
+                                <Typography textAlign="center">Profile</Typography>
+                            </MenuItem>
                             <MenuItem
                                 onClick={() => {
                                     handleRedirectToRegister();
                                     handleCloseNavMenu();
                                 }}
-                                sx={{
-                                    "&:hover": {
-                                        backgroundColor: "#FFF8E1", // Light warm off-white
-                                    },
-                                }}
+                                sx={menuItemStyle}
                             >
-                                <Typography textAlign="center">Add User</Typography>
+                                <Typography textAlign="center">Register</Typography>
                             </MenuItem>
                             <MenuItem
                                 onClick={() => {
                                     handleRedirectToLogin();
                                     handleCloseNavMenu();
                                 }}
-                                sx={{
-                                    "&:hover": {
-                                        backgroundColor: "#FFF8E1",
-                                    },
-                                }}
+                                sx={menuItemStyle}
                             >
                                 <Typography textAlign="center">Login</Typography>
                             </MenuItem>

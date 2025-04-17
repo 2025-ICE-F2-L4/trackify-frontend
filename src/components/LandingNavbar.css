@@ -1,0 +1,67 @@
+/* src/components/LandingNavBar.css */
+
+.app-bar {
+  background-color: var(--primary-bg) !important;
+  width: 100%;
+  box-shadow: none;
+}
+
+.nav-title {
+  cursor: pointer;
+}
+
+.nav-title:hover {
+  color: var(--hover-title);
+}
+
+.nav-buttons-container {
+  margin-left: auto;
+  display: none;
+  gap: 16px;
+}
+
+/* Zwiększ specyficzność dla przycisków */
+button.nav-button {
+  margin: 16px 0;
+  color: white !important; /* Zapewnij biały kolor */
+  background-color: transparent;
+  padding: 8px 16px;
+  border-radius: 8px;
+}
+
+button.nav-button:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+button.register-button {
+  margin: 16px 0;
+  color: white !important; /* Zapewnij biały kolor */
+  background-color: var(--accent-color);
+}
+
+button.register-button:hover {
+  background-color: #e3a02d;
+}
+
+.nav-buttons-container-mobile {
+  display: flex;
+  margin-left: auto;
+}
+
+.icon-button:hover {
+  background-color: rgba(255, 235, 205, 0.2);
+}
+
+.menu-item:hover {
+  background-color: #fff8e1;
+}
+
+/* Media queries dla responsywności */
+@media (min-width: 900px) {
+  .nav-buttons-container {
+    display: flex;
+  }
+  .nav-buttons-container-mobile {
+    display: none;
+  }
+}

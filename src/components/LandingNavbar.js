@@ -57,7 +57,6 @@ export default function LandingNavbar() {
             </Button>
           </Box>
 
-          {/* Mobile Menu Icon */}
           <Box className="nav-buttons-container-mobile">
             <IconButton
               size="large"

@@ -1,0 +1,94 @@
+/* src/components/Navbar.css */
+
+header.app-bar {
+  background-color: var(--primary-bg) !important;
+  width: 100%;
+  box-shadow: none;
+}
+
+.nav-title {
+  margin-right: 16px;
+  cursor: pointer;
+  display: none;
+}
+
+.nav-title:hover {
+  color: var(--hover-title);
+}
+
+.nav-title-mobile {
+  flex-grow: 1;
+  cursor: pointer;
+  display: flex;
+}
+
+.nav-title-mobile:hover {
+  color: var(--hover-title);
+}
+
+.nav-buttons-container {
+  margin-left: auto;
+  display: none;
+  gap: 16px;
+}
+
+button.nav-button {
+  margin: 16px 0;
+  color: white !important;
+  background-color: transparent;
+  padding: 8px 16px;
+  border-radius: 8px;
+}
+
+button.nav-button:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+button.logout-button {
+  margin: 16px 0;
+  color: white !important;
+  background-color: var(--accent-color);
+  padding: 8px 16px;
+  border-radius: 8px;
+}
+
+button.logout-button:hover {
+  background-color: #e3a02d;
+}
+
+.nav-buttons-container-mobile {
+  display: flex;
+  margin-left: auto;
+}
+
+button.icon-button:hover {
+  background-color: rgba(255, 235, 205, 0.2);
+}
+
+div.nav-menu .MuiPaper-root {
+  background-color: var(--primary-bg);
+  color: white;
+}
+
+li.menu-item:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Media queries dla responsywności */
+@media (min-width: 600px) {
+  .nav-title {
+    display: flex;
+  }
+  .nav-title-mobile {
+    display: none;
+  }
+}
+
+@media (min-width: 900px) {
+  .nav-buttons-container {
+    display: flex;
+  }
+  .nav-buttons-container-mobile {
+    display: none;
+  }
+}

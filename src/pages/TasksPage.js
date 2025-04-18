@@ -1,16 +1,13 @@
-import React from 'react';
-import Tasks from '../components/Tasks';
+import React from "react";
+import Tasks from "../components/Tasks";
+import "./TasksPage.css";
 
 const TasksPage = () => {
-    return (
-        <div style={{
-            maxWidth: '1200px',
-            margin: '0 auto',
-            padding: '20px'
-        }}>
-            <Tasks />
-        </div>
-    );
+  return (
+    <div className="tasks-page-container">
+      <Tasks />
+    </div>
+  );
 };
 
 export default TasksPage;

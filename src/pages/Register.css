@@ -1,6 +1,6 @@
-/* src/pages/Login.css */
+/* src/pages/Register.css */
 
-.login-box {
+.register-box {
   margin-top: 64px;
   padding: 32px;
   background-color: #fff; /* background.paper w domyślnym theme Material-UI */
@@ -8,20 +8,20 @@
   border-radius: 8px;
 }
 
-.login-title {
+.register-title {
   text-align: center;
   margin-bottom: 16px; /* gutterBottom w Typography */
 }
 
-.login-error {
-  margin-bottom: 16px;
-}
-
-.login-form {
+.register-form {
   margin-top: 8px;
 }
 
-button.login-button {
+.register-error {
+  margin-top: 16px;
+}
+
+button.register-button {
   margin-top: 24px;
   margin-bottom: 16px;
   background-color: #6d4c41;
@@ -34,17 +34,19 @@ button.login-button {
   cursor: pointer;
 }
 
-button.login-button:hover {
+button.register-button:hover {
   background-color: #5c4033;
   color: #fff !important;
 }
 
-button.login-button:disabled {
+button.register-button:disabled {
   background-color: #cccccc;
   color: #666 !important;
   cursor: not-allowed;
 }
 
-.login-link-container {
+/* ... reszta stylów bez zmian ... */
+
+.register-link-container {
   text-align: center;
 }

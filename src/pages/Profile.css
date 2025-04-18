@@ -1,90 +1,90 @@
 /* src/pages/Profile.css */
 
 .profile-box {
-  margin-top: 64px;
-  padding: 32px;
-  background-color: #fff; /* background.paper w domyślnym theme Material-UI */
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); /* Odpowiednik boxShadow: 3 */
-  border-radius: 8px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  margin-top: 64px !important;
+  padding: 32px !important;
+  background-color: #fff !important; /* background.paper w domyślnym theme Material-UI */
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2) !important; /* Odpowiednik boxShadow: 3 */
+  border-radius: 8px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
 }
 
 .profile-avatar {
-  width: 120px;
-  height: 120px;
-  border: 3px solid #6d4c41;
-  margin-bottom: 16px;
+  width: 120px !important;
+  height: 120px !important;
+  border: 3px solid #6d4c41 !important;
+  margin-bottom: 16px !important;
 }
 
 .profile-title {
-  text-align: center;
-  margin-bottom: 16px; /* gutterBottom w Typography */
+  text-align: center !important;
+  margin-bottom: 16px !important; /* gutterBottom w Typography */
 }
 
 .profile-error {
-  margin-bottom: 16px;
-  width: 100%;
+  margin-bottom: 16px !important;
+  width: 100% !important;
 }
 
 .profile-form {
-  margin-top: 8px;
-  width: 100%;
+  margin-top: 8px !important;
+  width: 100% !important;
 }
 
-.change-password-button {
-  margin: 16px 0;
-  background-color: #fff;
-  border: 1px solid #6d4c41;
-  color: #6d4c41;
-  padding: 8px 16px; /* Domyślne paddingi dla Button variant="outlined" */
-  border-radius: 4px;
-  text-transform: uppercase;
-  font-weight: 500;
-  cursor: pointer;
+button.change-password-button {
+  margin: 16px 0 !important;
+  background-color: #fff !important;
+  border: 1px solid #6d4c41 !important;
+  color: #6d4c41 !important;
+  padding: 8px 16px !important; /* Domyślne paddingi dla Button variant="outlined" */
+  border-radius: 4px !important;
+  text-transform: uppercase !important;
+  font-weight: 500 !important;
+  cursor: pointer !important;
 }
 
-.change-password-button:hover {
-  background-color: #f5f5f5;
+button.change-password-button:hover {
+  background-color: #f5f5f5 !important;
 }
 
 .password-fields {
-  margin-top: 16px;
-  width: 100%;
+  margin-top: 16px !important;
+  width: 100% !important;
 }
 
-.save-button,
-.edit-button {
-  margin: 24px 0 16px;
-  background-color: #6d4c41;
-  color: #fff;
-  padding: 8px 16px; /* Domyślne paddingi dla Button variant="contained" */
-  border: none;
-  border-radius: 4px;
-  text-transform: uppercase;
-  font-weight: 500;
-  cursor: pointer;
+button.save-button,
+button.edit-button {
+  margin: 24px 0 16px !important;
+  background-color: #6d4c41 !important;
+  color: #fff !important;
+  padding: 8px 16px !important; /* Domyślne paddingi dla Button variant="contained" */
+  border: none !important;
+  border-radius: 4px !important;
+  text-transform: uppercase !important;
+  font-weight: 500 !important;
+  cursor: pointer !important;
 }
 
-.save-button:hover,
-.edit-button:hover {
-  background-color: #5c4033;
+button.save-button:hover,
+button.edit-button:hover {
+  background-color: #5c4033 !important;
 }
 
 .profile-info {
-  margin-top: 24px;
-  width: 100%;
+  margin-top: 24px !important;
+  width: 100% !important;
 }
 
 .profile-email {
-  color: #6b7280; /* text.secondary w domyślnym theme Material-UI */
-  margin-bottom: 24px;
-  text-align: center;
+  color: #6b7280 !important; /* text.secondary w domyślnym theme Material-UI */
+  margin-bottom: 24px !important;
+  text-align: center !important;
 }
 
 .loading-container {
-  display: flex;
-  justify-content: center;
-  margin-top: 64px;
+  display: flex !important;
+  justify-content: center !important;
+  margin-top: 64px !important;
 }

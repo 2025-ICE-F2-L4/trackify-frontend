@@ -10,182 +10,122 @@ import Button from "@mui/material/Button";
 import MenuItem from "@mui/material/MenuItem";
 import MenuIcon from "@mui/icons-material/Menu";
 import { useRedirect } from "../navigation/RedirectHandlers";
+import "./Navbar.css";
 
 export default function Navbar() {
-    const handleRedirectToTasks = useRedirect("/tasks");
-    const handleRedirectToProfile = useRedirect("/profile");
-    const handleRedirectToLogout = useRedirect("/");
+  const handleRedirectToTasks = useRedirect("/tasks");
+  const handleRedirectToProfile = useRedirect("/profile");
+  const handleRedirectToLogout = useRedirect("/");
 
-    const [anchorElNav, setAnchorElNav] = React.useState(null);
+  const [anchorElNav, setAnchorElNav] = React.useState(null);
 
-    const handleOpenNavMenu = (event) => {
-        setAnchorElNav(event.currentTarget);
-    };
+  const handleOpenNavMenu = (event) => {
+    setAnchorElNav(event.currentTarget);
+  };
 
-    const handleCloseNavMenu = () => {
-        setAnchorElNav(null);
-    };
+  const handleCloseNavMenu = () => {
+    setAnchorElNav(null);
+  };
 
-    const navButtonStyle = {
-        my: 2,
-        color: "white",
-        backgroundColor: "transparent",
-        padding: "8px 16px",
-        borderRadius: "8px",
-        "&:hover": {
-            backgroundColor: "rgba(255, 255, 255, 0.2)",
-        },
-    };
+  return (
+    <AppBar position="static" className="app-bar">
+      <Container maxWidth="xl" sx={{ padding: "0 20px" }}>
+        <Toolbar disableGutters>
+          <Typography
+            variant="h6"
+            noWrap
+            component="div"
+            className="nav-title"
+            onClick={handleRedirectToTasks}
+          >
+            Trackify
+          </Typography>
 
-    const menuItemStyle = {
-        "&:hover": {
-            backgroundColor: "rgba(255, 255, 255, 0.1)",
-        },
-    };
+          <Typography
+            variant="h6"
+            noWrap
+            component="div"
+            className="nav-title-mobile"
+            onClick={handleRedirectToTasks}
+          >
+            Trackify
+          </Typography>
 
-    return (
-        <AppBar
-            position="static"
-            sx={{
-                backgroundColor: "var(--primary-bg)",
-                width: "100%",
-                boxShadow: "none",
-            }}
-        >
-            <Container maxWidth="xl" sx={{ padding: "0 20px" }}>
-                <Toolbar disableGutters>
-                    <Typography
-                        variant="h6"
-                        noWrap
-                        component="div"
-                        sx={{
-                            mr: 2,
-                            cursor: "pointer",
-                            "&:hover": { color: "var(--hover-title)" },
-                            display: { xs: 'none', sm: 'flex' },
-                        }}
-                        onClick={handleRedirectToTasks}
-                    >
-                        Trackify
-                    </Typography>
+          <Box className="nav-buttons-container">
+            <Button onClick={handleRedirectToTasks} className="nav-button">
+              Tasks
+            </Button>
 
-                    <Typography
-                        variant="h6"
-                        noWrap
-                        component="div"
-                        sx={{
-                            flexGrow: 1,
-                            cursor: "pointer",
-                            "&:hover": { color: "var(--hover-title)" },
-                            display: { xs: 'flex', sm: 'none' },
-                        }}
-                        onClick={handleRedirectToTasks}
-                    >
-                        Trackify
-                    </Typography>
+            <Button onClick={handleRedirectToProfile} className="nav-button">
+              Profile
+            </Button>
 
-                    <Box sx={{ ml: "auto", display: { xs: "none", md: "flex" }, gap: 2 }}>
-                        <Button
-                            onClick={handleRedirectToTasks}
-                            sx={navButtonStyle}
-                        >
-                            Tasks
-                        </Button>
+            <Button onClick={handleRedirectToLogout} className="logout-button">
+              Logout
+            </Button>
+          </Box>
 
-                        <Button
-                            onClick={handleRedirectToProfile}
-                            sx={navButtonStyle}
-                        >
-                            Profile
-                        </Button>
+          <Box className="nav-buttons-container-mobile">
+            <IconButton
+              size="large"
+              aria-label="navigation menu"
+              aria-controls="menu-appbar"
+              aria-haspopup="true"
+              onClick={handleOpenNavMenu}
+              color="inherit"
+              className="icon-button"
+            >
+              <MenuIcon />
+            </IconButton>
+            <Menu
+              id="menu-appbar"
+              anchorEl={anchorElNav}
+              anchorOrigin={{
+                vertical: "bottom",
+                horizontal: "right",
+              }}
+              keepMounted
+              transformOrigin={{
+                vertical: "top",
+                horizontal: "right",
+              }}
+              open={Boolean(anchorElNav)}
+              onClose={handleCloseNavMenu}
+              className="nav-menu"
+            >
+              <MenuItem
+                onClick={() => {
+                  handleRedirectToTasks();
+                  handleCloseNavMenu();
+                }}
+                className="menu-item"
+              >
+                <Typography textAlign="center">Home</Typography>
+              </MenuItem>
 
-                        <Button
-                            onClick={handleRedirectToLogout}
-                            sx={{
-                                my: 2,
-                                color: "white",
-                                backgroundColor: "var(--accent-color)",
-                                padding: "8px 16px",
-                                borderRadius: "8px",
-                                "&:hover": {
-                                    backgroundColor: "#E3A02D",
-                                },
-                            }}
-                        >
-                            Logout
-                        </Button>
-                    </Box>
+              <MenuItem
+                onClick={() => {
+                  handleRedirectToProfile();
+                  handleCloseNavMenu();
+                }}
+                className="menu-item"
+              >
+                <Typography textAlign="center">Profile</Typography>
+              </MenuItem>
 
-                    <Box sx={{ display: { xs: "flex", md: "none" }, ml: "auto" }}>
-                        <IconButton
-                            size="large"
-                            aria-label="navigation menu"
-                            aria-controls="menu-appbar"
-                            aria-haspopup="true"
-                            onClick={handleOpenNavMenu}
-                            color="inherit"
-                            sx={{
-                                "&:hover": {
-                                    backgroundColor: "rgba(255, 235, 205, 0.2)",
-                                },
-                            }}
-                        >
-                            <MenuIcon />
-                        </IconButton>
-                        <Menu
-                            id="menu-appbar"
-                            anchorEl={anchorElNav}
-                            anchorOrigin={{
-                                vertical: "bottom",
-                                horizontal: "right",
-                            }}
-                            keepMounted
-                            transformOrigin={{
-                                vertical: "top",
-                                horizontal: "right",
-                            }}
-                            open={Boolean(anchorElNav)}
-                            onClose={handleCloseNavMenu}
-                            sx={{
-                                "& .MuiPaper-root": {
-                                    backgroundColor: "var(--primary-bg)",
-                                    color: "white",
-                                },
-                            }}
-                        >
-                            <MenuItem
-                                onClick={() => {
-                                    handleRedirectToTasks();
-                                    handleCloseNavMenu();
-                                }}
-                                sx={menuItemStyle}
-                            >
-                                <Typography textAlign="center">Home</Typography>
-                            </MenuItem>
-
-                            <MenuItem
-                                onClick={() => {
-                                    handleRedirectToProfile();
-                                    handleCloseNavMenu();
-                                }}
-                                sx={menuItemStyle}
-                            >
-                                <Typography textAlign="center">Profile</Typography>
-                            </MenuItem>
-
-                            <MenuItem
-                                onClick={() => {
-                                    handleRedirectToLogout();
-                                    handleCloseNavMenu();
-                                }}
-                                sx={menuItemStyle}
-                            >
-                                <Typography textAlign="center">Logout</Typography>
-                            </MenuItem>
-                        </Menu>
-                    </Box>
-                </Toolbar>
-            </Container>
-        </AppBar>
-    );
+              <MenuItem
+                onClick={() => {
+                  handleRedirectToLogout();
+                  handleCloseNavMenu();
+                }}
+                className="menu-item"
+              >
+                <Typography textAlign="center">Logout</Typography>
+              </MenuItem>
+            </Menu>
+          </Box>
+        </Toolbar>
+      </Container>
+    </AppBar>
+  );
 }

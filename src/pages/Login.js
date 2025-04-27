@@ -10,7 +10,6 @@ import {
 } from "@mui/material";
 import { useRedirect } from "../navigation/RedirectHandlers";
 import { useUser } from "../context/UserContext";
-import axios from "axios";
 import api from "../api";
 import "./Login.css";
 

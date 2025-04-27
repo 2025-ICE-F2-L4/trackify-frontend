@@ -13,8 +13,8 @@ import api from "../api";
 import "./Register.css";
 
 export default function Register() {
-  const handleRedirectToLogin = useRedirect("/Login");
-  const handleRedirectToProfile = useRedirect("/Profile");
+  const handleRedirectToLogin = useRedirect("/login");
+  const handleRedirectToProfile = useRedirect("/profile");
 
   const [formData, setFormData] = useState({
     username: "",

@@ -1,8 +1,7 @@
-/* src/pages/Tasks.css */
-
 .tasks-container {
   display: flex;
-  height: 100vh;
+  flex: 1;
+  /*height: 100vh;*/
   font-family: Arial, sans-serif;
   background-color: #f5f5f5;
 }

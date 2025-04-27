@@ -3,9 +3,9 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import TaskItem from "./TaskItem";
 import api from "../api";
-import "./Tasks.css"; // Import CSS
+import "./Tasks.css";
 
-export default function Tasks() {
+export default function Tasks({filter}) {
   const [tasks, setTasks] = useState([]);
   const [newTask, setNewTask] = useState("");
   const [selectedTask, setSelectedTask] = useState(null);
@@ -186,45 +186,74 @@ export default function Tasks() {
       })
     );
   };
+  const filteredTasks = tasks.filter((t) => {
+    if (filter === "completed") return t.completed;
+    if (filter === "uncompleted") return !t.completed;
+    return true; // all
+  });
 
+  // return (
+  //   <div className="tasks-container">
+  //     {/* Left side - task list */}
+  //     <div className={`task-list ${selectedTask ? "has-details" : ""}`}>
+  //       <h2 className="task-list-title">Today's Goals</h2>
+  //       {isLoading && <p>Loading Goals...</p>}
+  //       {error && <p className="task-error">{error}</p>}
+  //       <div className="task-input-container">
+  //         <input
+  //           type="text"
+  //           value={newTask}
+  //           onChange={(e) => setNewTask(e.target.value)}
+  //           placeholder="Add new goal..."
+  //           className="task-input"
+  //           onKeyPress={(e) => e.key === "Enter" && handleAddTask()}
+  //         />
+  //         <button onClick={handleAddTask} className="task-add-button">
+  //           Add
+  //         </button>
+  //       </div>
+  //       <ul className="task-list-ul">
+  //         {tasks.length === 0 ? (
+  //           <li className="task-empty">No goals to display</li>
+  //         ) : (
+  //           tasks.map((task, index) => (
+  //             <TaskItem
+  //               key={task.id || index}
+  //               index={index}
+  //               task={task}
+  //               isSelected={selectedTask?.index === index}
+  //               onToggle={handleToggleTask}
+  //               onSelect={handleSelectTask}
+  //               onDelete={handleDeleteTasks}
+  //             />
+  //           ))
+  //         )}
+  //       </ul>
+  //     </div>
   return (
-    <div className="tasks-container">
-      {/* Left side - task list */}
-      <div className={`task-list ${selectedTask ? "has-details" : ""}`}>
-        <h2 className="task-list-title">Today's Goals</h2>
-        {isLoading && <p>Loading Goals...</p>}
-        {error && <p className="task-error">{error}</p>}
-        <div className="task-input-container">
-          <input
-            type="text"
-            value={newTask}
-            onChange={(e) => setNewTask(e.target.value)}
-            placeholder="Add new goal..."
-            className="task-input"
-            onKeyPress={(e) => e.key === "Enter" && handleAddTask()}
-          />
-          <button onClick={handleAddTask} className="task-add-button">
-            Add
-          </button>
+      <div className="tasks-container">
+        {/* Left side - task list */}
+        <div className={`task-list ${selectedTask ? "has-details" : ""}`}>
+          <h2 className="task-list-title">Today's Goals</h2>
+          {/* ... inputs, loading, errors ... */}
+          <ul className="task-list-ul">
+            {filteredTasks.length === 0 ? (
+                <li className="task-empty">No goals to display</li>
+            ) : (
+                filteredTasks.map((task, index) => (
+                    <TaskItem
+                        key={task.id_task}
+                        index={index}
+                        task={task}
+                        isSelected={selectedTask?.index === index}
+                        onToggle={handleToggleTask}
+                        onSelect={handleSelectTask}
+                        onDelete={handleDeleteTasks}
+                    />
+                ))
+            )}
+          </ul>
         </div>
-        <ul className="task-list-ul">
-          {tasks.length === 0 ? (
-            <li className="task-empty">No goals to display</li>
-          ) : (
-            tasks.map((task, index) => (
-              <TaskItem
-                key={task.id || index}
-                index={index}
-                task={task}
-                isSelected={selectedTask?.index === index}
-                onToggle={handleToggleTask}
-                onSelect={handleSelectTask}
-                onDelete={handleDeleteTasks}
-              />
-            ))
-          )}
-        </ul>
-      </div>
       {/* Right side - task details */}
       {selectedTask && (
         <div className="task-details">

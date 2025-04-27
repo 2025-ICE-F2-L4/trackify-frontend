@@ -5,7 +5,7 @@ import TaskItem from "./TaskItem";
 import api from "../api";
 import "./Tasks.css";
 
-export default function Tasks({filter}) {
+export default function Tasks({filter, searchTerm=""}) {
   const [tasks, setTasks] = useState([]);
   const [newTask, setNewTask] = useState("");
   const [selectedTask, setSelectedTask] = useState(null);
@@ -186,56 +186,35 @@ export default function Tasks({filter}) {
       })
     );
   };
-  const filteredTasks = tasks.filter((t) => {
-    if (filter === "completed") return t.completed;
-    if (filter === "uncompleted") return !t.completed;
-    return true; // all
-  });
-
-  // return (
-  //   <div className="tasks-container">
-  //     {/* Left side - task list */}
-  //     <div className={`task-list ${selectedTask ? "has-details" : ""}`}>
-  //       <h2 className="task-list-title">Today's Goals</h2>
-  //       {isLoading && <p>Loading Goals...</p>}
-  //       {error && <p className="task-error">{error}</p>}
-  //       <div className="task-input-container">
-  //         <input
-  //           type="text"
-  //           value={newTask}
-  //           onChange={(e) => setNewTask(e.target.value)}
-  //           placeholder="Add new goal..."
-  //           className="task-input"
-  //           onKeyPress={(e) => e.key === "Enter" && handleAddTask()}
-  //         />
-  //         <button onClick={handleAddTask} className="task-add-button">
-  //           Add
-  //         </button>
-  //       </div>
-  //       <ul className="task-list-ul">
-  //         {tasks.length === 0 ? (
-  //           <li className="task-empty">No goals to display</li>
-  //         ) : (
-  //           tasks.map((task, index) => (
-  //             <TaskItem
-  //               key={task.id || index}
-  //               index={index}
-  //               task={task}
-  //               isSelected={selectedTask?.index === index}
-  //               onToggle={handleToggleTask}
-  //               onSelect={handleSelectTask}
-  //               onDelete={handleDeleteTasks}
-  //             />
-  //           ))
-  //         )}
-  //       </ul>
-  //     </div>
+  const filteredTasks = tasks
+      .filter((t) => {
+        if (filter === "completed") return t.completed;
+        if (filter === "uncompleted") return !t.completed;
+        return true;
+      })
+      .filter((t) =>
+          t.name.toLowerCase().includes(searchTerm.trim().toLowerCase())
+      );
   return (
       <div className="tasks-container">
         {/* Left side - task list */}
         <div className={`task-list ${selectedTask ? "has-details" : ""}`}>
           <h2 className="task-list-title">Today's Goals</h2>
-          {/* ... inputs, loading, errors ... */}
+          {isLoading && <p>Loading Goals...</p>}
+          {error && <p className="task-error">{error}</p>}
+          <div className="task-input-container">
+            <input
+                type="text"
+                value={editedName}
+                onChange={(e) => setEditedName(e.target.value)}
+                placeholder="Add new goal..."
+                className="task-input"
+                onKeyPress={(e) => e.key === "Enter" && handleAddTask()}
+            />
+            <button onClick={handleAddTask} className="task-add-button">
+              Add
+            </button>
+          </div>
           <ul className="task-list-ul">
             {filteredTasks.length === 0 ? (
                 <li className="task-empty">No goals to display</li>
@@ -254,132 +233,132 @@ export default function Tasks({filter}) {
             )}
           </ul>
         </div>
-      {/* Right side - task details */}
-      {selectedTask && (
-        <div className="task-details">
-          <h1 className="task-details-title">Goal Description</h1>
-          <div className="task-name-container">
-            {editingName ? (
-              <>
-                <input
-                  type="text"
-                  value={editedName}
-                  onChange={(e) => setEditedName(e.target.value)}
-                  className="task-name-input"
-                />
-                <button
-                  onClick={handleSaveName}
-                  className="task-name-save-button"
-                >
-                  Save
-                </button>
-              </>
-            ) : (
-              <>
-                <h2 className="task-name">{selectedTask.name}</h2>
-                <button
-                  onClick={() => {
-                    setEditingName(true);
-                    setEditedName(selectedTask.name);
-                  }}
-                  className="task-name-edit-button"
-                  title="Edit task name"
-                >
-                  🖉
-                </button>
-              </>
-            )}
-          </div>
+        {/* Right side - task details */}
+        {selectedTask && (
+            <div className="task-details">
+              <h1 className="task-details-title">Goal Description</h1>
+              <div className="task-name-container">
+                {editingName ? (
+                    <>
+                      <input
+                          type="text"
+                          value={editedName}
+                          onChange={(e) => setEditedName(e.target.value)}
+                          className="task-name-input"
+                      />
+                      <button
+                          onClick={handleSaveName}
+                          className="task-name-save-button"
+                      >
+                        Save
+                      </button>
+                    </>
+                ) : (
+                    <>
+                      <h2 className="task-name">{selectedTask.name}</h2>
+                      <button
+                          onClick={() => {
+                            setEditingName(true);
+                            setEditedName(selectedTask.name);
+                          }}
+                          className="task-name-edit-button"
+                          title="Edit task name"
+                      >
+                        🖉
+                      </button>
+                    </>
+                )}
+              </div>
 
-          {editMode ? (
-            <div className="task-description-container">
+              {editMode ? (
+                  <div className="task-description-container">
               <textarea
-                value={editedDescription}
-                onChange={(e) => setEditedDescription(e.target.value)}
-                placeholder="Click to edit description"
-                className="task-description-textarea"
+                  value={editedDescription}
+                  onChange={(e) => setEditedDescription(e.target.value)}
+                  placeholder="Click to edit description"
+                  className="task-description-textarea"
               />
-              <button
-                onClick={handleSaveDescription}
-                className="task-description-save-button"
-              >
-                Save Description
-              </button>
-            </div>
-          ) : (
-            <p
-              onClick={() => setEditMode(true)}
-              className={`task-description ${
-                selectedTask.description ? "" : "empty"
-              }`}
-            >
-              {selectedTask.description || "Click to add description..."}
-            </p>
-          )}
-          <div className="task-date-container">
-            {/* Start Date */}
-            <div className="task-date">
-              <strong className="task-date-label">Start Date</strong>
-              <DatePicker
-                selected={new Date(selectedTask.startedAt)}
-                onChange={(date) => handleDateChange(date, "startedAt")}
-                showTimeSelect
-                timeFormat="HH:mm"
-                timeIntervals={15}
-                dateFormat="HH:mm dd-MM-yyyy"
-                customInput={
-                  <div className="task-datepicker">
-                    {formatDate(new Date(selectedTask.startedAt))}
+                    <button
+                        onClick={handleSaveDescription}
+                        className="task-description-save-button"
+                    >
+                      Save Description
+                    </button>
                   </div>
-                }
-              />
+              ) : (
+                  <p
+                      onClick={() => setEditMode(true)}
+                      className={`task-description ${
+                          selectedTask.description ? "" : "empty"
+                      }`}
+                  >
+                    {selectedTask.description || "Click to add description..."}
+                  </p>
+              )}
+              <div className="task-date-container">
+                {/* Start Date */}
+                <div className="task-date">
+                  <strong className="task-date-label">Start Date</strong>
+                  <DatePicker
+                      selected={new Date(selectedTask.startedAt)}
+                      onChange={(date) => handleDateChange(date, "startedAt")}
+                      showTimeSelect
+                      timeFormat="HH:mm"
+                      timeIntervals={15}
+                      dateFormat="HH:mm dd-MM-yyyy"
+                      customInput={
+                        <div className="task-datepicker">
+                          {formatDate(new Date(selectedTask.startedAt))}
+                        </div>
+                      }
+                  />
+                </div>
+              </div>
+              <div className="task-actions-container">
+                <button
+                    onClick={() => {
+                      if (selectedTask) {
+                        handleToggleTask(selectedTask.index);
+                      }
+                    }}
+                    className={`task-action-button complete ${
+                        selectedTask.completed ? "completed" : ""
+                    }`}
+                >
+                  {selectedTask.completed
+                      ? "✗ Mark as Uncompleted"
+                      : "✓ Complete Goal"}
+                </button>
+                <button
+                    onClick={handleCloseDetails}
+                    className="task-action-button close"
+                >
+                  ✕ Close
+                </button>
+                <button
+                    onClick={() => {
+                      if (!confirmDelete) {
+                        setConfirmDelete(true);
+                      } else {
+                        handleDeleteTasks(selectedTask.index);
+                        setConfirmDelete(false);
+                      }
+                    }}
+                    className={`task-action-button delete ${
+                        confirmDelete ? "confirm" : ""
+                    }`}
+                >
+                  {confirmDelete ? "Are you sure?" : "🗑 Delete"}
+                </button>
+                <button
+                    onClick={handleDuplicateTask}
+                    className="task-action-button duplicate"
+                >
+                  Duplicate Task
+                </button>
+              </div>
             </div>
-          </div>
-          <div className="task-actions-container">
-            <button
-              onClick={() => {
-                if (selectedTask) {
-                  handleToggleTask(selectedTask.index);
-                }
-              }}
-              className={`task-action-button complete ${
-                selectedTask.completed ? "completed" : ""
-              }`}
-            >
-              {selectedTask.completed
-                ? "✗ Mark as Uncompleted"
-                : "✓ Complete Goal"}
-            </button>
-            <button
-              onClick={handleCloseDetails}
-              className="task-action-button close"
-            >
-              ✕ Close
-            </button>
-            <button
-              onClick={() => {
-                if (!confirmDelete) {
-                  setConfirmDelete(true);
-                } else {
-                  handleDeleteTasks(selectedTask.index);
-                  setConfirmDelete(false);
-                }
-              }}
-              className={`task-action-button delete ${
-                confirmDelete ? "confirm" : ""
-              }`}
-            >
-              {confirmDelete ? "Are you sure?" : "🗑 Delete"}
-            </button>
-            <button
-              onClick={handleDuplicateTask}
-              className="task-action-button duplicate"
-            >
-              Duplicate Task
-            </button>
-          </div>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
   );
 }

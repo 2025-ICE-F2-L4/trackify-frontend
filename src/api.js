@@ -6,7 +6,7 @@ const api = axios.create({
 
 // ✅ Add the token to request headers
 api.interceptors.request.use(
-    config => {
+    (config) => {
         const token = localStorage.getItem("authToken");
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
@@ -15,37 +15,45 @@ api.interceptors.request.use(
         // ✅ Log outgoing request
         console.log(
             `%c➡️ Request [${config.method?.toUpperCase()}] ${config.url}`,
-            'color: blue; font-weight: bold;',
-            config.data || ''
+            "color: rgb(5, 163, 255); font-weight: bold;",
+            config.data || ""
         );
 
         return config;
     },
-    error => {
-        console.error('%c❌ Request Error', 'color: red; font-weight: bold;', error);
+    (error) => {
+        console.error(
+            "%c❌ Request Error",
+            "color: red; font-weight: bold;",
+            error
+        );
         return Promise.reject(error);
     }
 );
 
 // ✅ Log incoming responses
 api.interceptors.response.use(
-    response => {
+    (response) => {
         console.log(
             `%c✅ Response [${response.status}] ${response.config.url}`,
-            'color: green; font-weight: bold;',
+            "color: rgb(85, 255, 76); font-weight: bold;",
             response.data
         );
         return response;
     },
-    error => {
+    (error) => {
         if (error.response) {
             console.error(
                 `%c❌ Response Error [${error.response.status}] ${error.config?.url}`,
-                'color: red; font-weight: bold;',
+                "color: red; font-weight: bold;",
                 error.response.data
             );
         } else {
-            console.error('%c❌ Network Error', 'color: red; font-weight: bold;', error);
+            console.error(
+                "%c❌ Network Error",
+                "color: red; font-weight: bold;",
+                error
+            );
         }
         return Promise.reject(error);
     }

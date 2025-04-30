@@ -1,0 +1,10 @@
+.tag {
+    position: absolute;
+    right: 200px;
+    top: 50%;
+    transform: translateY(-50%);
+    letter-spacing: 1px;
+    font-size: 1rem;
+    padding: 6px 12px;
+    border-radius: 5px;
+}

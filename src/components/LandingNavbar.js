@@ -46,12 +46,40 @@ export default function LandingNavbar() {
 
           {/* Push buttons to the right */}
           <Box className="nav-buttons-container">
-            <Button onClick={handleRedirectToLogin} className="nav-button">
+            <Button
+                onClick={handleRedirectToLogin}
+                className="nav-button"
+                variant="contained"
+                size="large"
+                sx={{
+                  mt: 4,
+                  backgroundColor: '#FFB300',
+                  color: '#6D4C41',
+                  textTransform: 'none',
+                  fontWeight: 'bold',
+                  '&:hover': {
+                    backgroundColor: '#E0A800',
+                  },
+                }}
+            >
+
               Login
             </Button>
             <Button
               onClick={handleRedirectToRegister}
-              className="register-button"
+              className="nav-button"
+              variant="contained"
+              size="large"
+              sx={{
+                mt: 4,
+                backgroundColor: '#FFB300',
+                color: '#6D4C41',
+                textTransform: 'none',
+                fontWeight: 'bold',
+                '&:hover': {
+                  backgroundColor: '#E0A800',
+                },
+              }}
             >
               Register
             </Button>

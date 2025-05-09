@@ -34,14 +34,22 @@ header.app-bar {
 
 button.nav-button {
   margin: 16px 0;
-  color: white !important;
-  background-color: transparent;
+  color: black !important;
+  background-color: var(--hover-title);
   padding: 8px 16px;
   border-radius: 8px;
+  transition: background-color 0.3s;
 }
 
 button.nav-button:hover {
   background-color: rgba(255, 255, 255, 0.2);
+  color: white !important;
+}
+
+
+.nav-buttons-container-mobile {
+  display: flex;
+  margin-left: auto;
 }
 
 button.logout-button {

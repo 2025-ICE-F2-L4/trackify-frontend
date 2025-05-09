@@ -44,11 +44,8 @@ export default function Tasks({filter, searchTerm=""}) {
 
   const handleAddTask = async () => {
     if (newTask.trim() !== "") {
-      const payload = { name: newTask };
       try {
-        const response = await api.post("/task", payload);
-        const createdTask = response.data;
-        setTasks([...tasks, createdTask]);
+        await api.post("/task", {name: newTask});
         setNewTask("");
         fetchTasks();
       } catch (error) {
@@ -56,7 +53,6 @@ export default function Tasks({filter, searchTerm=""}) {
       }
     }
   };
-
   const handleToggleTask = async (index) => {
     const task = tasks[index];
     const isNowCompleted = !task.completed;
@@ -148,12 +144,8 @@ export default function Tasks({filter, searchTerm=""}) {
       });
       const duplicateCount = duplicates.length;
       const newName = `${baseName} (${duplicateCount})`;
-
-      const payload = { name: newName };
       try {
-        const response = await api.post("/task", payload);
-        const createdTask = response.data;
-        setTasks([...tasks, createdTask]);
+        await api.post("/task", { name: newName });
         fetchTasks();
       } catch (error) {
         setError(error?.response?.data?.message || "Error duplicating task");
@@ -205,8 +197,8 @@ export default function Tasks({filter, searchTerm=""}) {
           <div className="task-input-container">
             <input
                 type="text"
-                value={editedName}
-                onChange={(e) => setEditedName(e.target.value)}
+                value={newTask}
+                onChange={(e) => setNewTask(e.target.value)}
                 placeholder="Add new goal..."
                 className="task-input"
                 onKeyPress={(e) => e.key === "Enter" && handleAddTask()}

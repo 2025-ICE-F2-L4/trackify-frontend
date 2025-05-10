@@ -20,15 +20,19 @@ export default function Tasks({filter, searchTerm=""}) {
   const [editingName, setEditingName] = useState(false);
   const [editedName, setEditedName] = useState("");
 
-  // useEffect(() => {
-  //   fetchTasks();
-  //   fetchTags();
-  // }, []);
   useEffect(() => {
     initData();
   }, []);
 
-// inside Tasks.jsx
+  const fetchTags = async () => {
+    try {
+      const tagsRes = await api.get("/tag");
+      setTags(tagsRes.data.tags || []);
+    } catch (err) {
+      console.error("Error fetching tags:", err);
+    }
+  };
+
   const initData = async () => {
     setIsLoading(true);
     try {
@@ -129,11 +133,12 @@ export default function Tasks({filter, searchTerm=""}) {
     }
   };
 
-  const handleSelectTask = (index) => {
+  const handleSelectTask = async (index) => {
+    await fetchTags();
     const task = tasks[index];
-    setSelectedTask({ ...task, index });
+    setSelectedTask({...task, index});
     setTempTag(task.tag || null);
-    setEditedDescription(tasks[index].description);
+    setEditedDescription(task.description);
     setEditMode(false);
     setConfirmDelete(false);
   };

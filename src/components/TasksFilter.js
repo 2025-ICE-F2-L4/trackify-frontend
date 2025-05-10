@@ -7,6 +7,7 @@ import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
 import api from "../api"; // Adjust path as needed
 import "./TasksFilter.css";
+import {Chip} from "@mui/material";
 
 // Props:
 // filter: current filter type (all, completed, uncompleted or tag id)
@@ -92,14 +93,20 @@ export default function TasksFilter({ filter, setFilter, searchTerm = "", setSea
             <h4 className="filter-subtitle">Tags</h4>
             <div className="filter-tags">
                 {tags.map(tag => (
-                    <button
+                    <Chip
                         key={tag.id_tag}
-                        className={filter === tag.id_tag ? "active tag-button" : "tag-button"}
+                        label={tag.name}
+                        size="small"
+                        clickable
                         onClick={() => setFilter(tag.id_tag)}
-                        style={{ backgroundColor: tag.color }}
-                    >
-                        {tag.name}
-                    </button>
+                        variant={filter === tag.id_tag ? 'filled' : 'outlined'}
+                        style={{
+                            backgroundColor: filter === tag.id_tag ? tag.color : undefined,
+                            color: filter === tag.id_tag ? '#fff' : undefined,
+                            borderColor: tag.color,
+                        }}
+                        className="filter-chip"
+                    />
                 ))}
                 {creating ? (
                     <div className="tag-creation-inline">
@@ -115,10 +122,10 @@ export default function TasksFilter({ filter, setFilter, searchTerm = "", setSea
                             value={newTagColor}
                             onChange={(e) => setNewTagColor(e.target.value)}
                         />
-                        <button onClick={handleSaveTag}>
+                        <button onClick={handleSaveTag} className="icon-button">
                             <CheckIcon fontSize="small" />
                         </button>
-                        <button onClick={handleCancel}>
+                        <button onClick={handleCancel} className="icon-button">
                             <CloseIcon fontSize="small" />
                         </button>
                     </div>
@@ -131,4 +138,3 @@ export default function TasksFilter({ filter, setFilter, searchTerm = "", setSea
         </div>
     );
 }
-

@@ -83,42 +83,6 @@ export default function Tasks({filter, searchTerm=""}) {
       setIsLoading(false);
     }
   };
-  const fetchTasks = async () => {
-    setIsLoading(true);
-    try {
-      const res = await api.get('/task');
-      const raw = Array.isArray(res.data.tasks) ? res.data.tasks : [];
-
-      const merged = raw.map(t => {
-        let tagObj = null;
-        if (t.tag) {
-          tagObj = t.tag;
-        } else if (t.id_tag != null) {
-          tagObj = tags.find(tag => tag.id_tag === t.id_tag) || null;
-        } else if (t.tagName) {
-          tagObj = tags.find(tag => tag.name === t.tagName) || null;
-          if (!tagObj) {
-            tagObj = {
-              id_tag: null,
-              name: t.tagName,
-              color: t.tagColor
-            };
-          }
-        }
-        return {
-          ...t,
-          completed: !!t.finishedAt,
-          tag: tagObj,
-        };
-      });
-
-      setTasks(merged);
-    } catch (err) {
-      setError(err?.response?.data?.message || 'Failed to fetch tasks');
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const handleAddTask = async () => {
     if (newTask.trim() !== "") {
@@ -310,10 +274,10 @@ export default function Tasks({filter, searchTerm=""}) {
     );
   };
   const filteredTasks = tasks
-      .filter(t => {
-        if (filter === 'completed') return t.completed;
-        if (filter === 'uncompleted') return !t.completed;
-        if (typeof filter === 'number') {
+      .filter((t) => {
+        if (filter === "completed") return t.completed;
+        if (filter === "uncompleted") return !t.completed;
+        if (typeof filter === "number") {
           return t.tag && t.tag.id_tag === filter;
         }
         return true;

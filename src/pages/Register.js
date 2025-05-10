@@ -14,7 +14,7 @@ import "./Register.css";
 
 export default function Register() {
   const handleRedirectToLogin = useRedirect("/login");
-  const handleRedirectToProfile = useRedirect("/profile");
+  const handleRedirectToLanding = useRedirect("/");
 
   const [formData, setFormData] = useState({
     username: "",
@@ -25,7 +25,6 @@ export default function Register() {
   const [formError, setFormError] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Handle form input change
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -34,7 +33,6 @@ export default function Register() {
     }));
   };
 
-  // Validate form data before submission
   const validateForm = () => {
     const { username, email, password } = formData;
     if (!username || !email || !password) {
@@ -45,7 +43,6 @@ export default function Register() {
     return true;
   };
 
-  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) {
@@ -61,7 +58,7 @@ export default function Register() {
 
       console.log("Response from server:", response.data);
       // Redirect to the profile page after successful registration
-      handleRedirectToProfile();
+      handleRedirectToLanding();
     } catch (error) {
       if (error.response) {
         console.error("Backend responded with:", error.response.data);

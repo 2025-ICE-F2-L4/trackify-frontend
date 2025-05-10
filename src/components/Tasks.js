@@ -4,9 +4,12 @@ import "react-datepicker/dist/react-datepicker.css";
 import TaskItem from "./TaskItem";
 import api from "../api";
 import "./Tasks.css";
+import {Autocomplete, Button, Chip, Stack, TextField} from "@mui/material";
 
 export default function Tasks({filter, searchTerm=""}) {
   const [tasks, setTasks] = useState([]);
+  const [tags, setTags] = useState([]);
+  const [tempTag, setTempTag] = useState(null);
   const [newTask, setNewTask] = useState("");
   const [selectedTask, setSelectedTask] = useState(null);
   const [editMode, setEditMode] = useState(false);
@@ -18,39 +21,79 @@ export default function Tasks({filter, searchTerm=""}) {
   const [editedName, setEditedName] = useState("");
 
   useEffect(() => {
-    fetchTasks();
+    initData();
   }, []);
 
-  const fetchTasks = () => {
+  const fetchTags = async () => {
+    try {
+      const tagsRes = await api.get("/tag");
+      setTags(tagsRes.data.tags || []);
+    } catch (err) {
+      console.error("Error fetching tags:", err);
+    }
+  };
+
+  const initData = async () => {
     setIsLoading(true);
-    api
-      .get("/task")
-      .then((response) => {
-        if (response.data && Array.isArray(response.data.tasks)) {
-          const updatedTasks = response.data.tasks.map((task) => ({
-            ...task,
-            completed: !!task.finishedAt,
-          }));
-          setTasks(updatedTasks);
-        } else {
-          setTasks([]);
+    try {
+      const [tagsRes, tasksRes] = await Promise.all([
+        api.get('/tag'),
+        api.get('/task'),
+      ]);
+      const allTags = tagsRes.data.tags || [];
+      setTags(allTags);
+
+      const rawTasks = Array.isArray(tasksRes.data.tasks)
+          ? tasksRes.data.tasks
+          : [];
+
+      const merged = rawTasks.map(t => {
+        // Attempt to find full tag object from fetched tags by id_tag or by name
+        let tagObj = null;
+
+        // 1) If API returned nested t.tag
+        if (t.tag) {
+          tagObj = t.tag;
         }
-      })
-      .catch((error) =>
-        setError(error?.response?.data?.message || "Failed to fetch tasks")
-      )
-      .finally(() => setIsLoading(false));
+        // 2) If API returned numeric id_tag
+        else if (t.id_tag != null) {
+          tagObj = allTags.find(tag => tag.id_tag === t.id_tag) || null;
+        }
+        // 3) If API returned tagName/tagColor, match by name or fallback to build
+        else if (t.tagName) {
+          // Try matching existing tag by name
+          tagObj = allTags.find(tag => tag.name === t.tagName) || null;
+          // If no matching tag, build minimal object
+          if (!tagObj) {
+            tagObj = {
+              id_tag: null,     // unknown id
+              name: t.tagName,
+              color: t.tagColor
+            };
+          }
+        }
+
+        return {
+          ...t,
+          completed: !!t.finishedAt,
+          tag: tagObj,
+        };
+      });
+
+      setTasks(merged);
+    } catch (err) {
+      setError(err?.response?.data?.message || 'Error fetching data');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleAddTask = async () => {
     if (newTask.trim() !== "") {
-      const payload = { name: newTask };
       try {
-        const response = await api.post("/task", payload);
-        const createdTask = response.data;
-        setTasks([...tasks, createdTask]);
+        await api.post("/task", {name: newTask});
         setNewTask("");
-        fetchTasks();
+        initData();
       } catch (error) {
         setError(error?.response?.data?.message || "Error adding task");
       }
@@ -64,6 +107,7 @@ export default function Tasks({filter, searchTerm=""}) {
       await api.put(`/task/${task.id_task}`, {
         isFinished: isNowCompleted ? 1 : 0,
       });
+      await initData();
 
       const updatedTasks = tasks.map((t, i) => {
         if (i === index) {
@@ -89,9 +133,12 @@ export default function Tasks({filter, searchTerm=""}) {
     }
   };
 
-  const handleSelectTask = (index) => {
-    setSelectedTask({ ...tasks[index], index });
-    setEditedDescription(tasks[index].description);
+  const handleSelectTask = async (index) => {
+    await fetchTags();
+    const task = tasks[index];
+    setSelectedTask({...task, index});
+    setTempTag(task.tag || null);
+    setEditedDescription(task.description);
     setEditMode(false);
     setConfirmDelete(false);
   };
@@ -148,13 +195,9 @@ export default function Tasks({filter, searchTerm=""}) {
       });
       const duplicateCount = duplicates.length;
       const newName = `${baseName} (${duplicateCount})`;
-
-      const payload = { name: newName };
       try {
-        const response = await api.post("/task", payload);
-        const createdTask = response.data;
-        setTasks([...tasks, createdTask]);
-        fetchTasks();
+        await api.post("/task", { name: newName });
+        await initData();
       } catch (error) {
         setError(error?.response?.data?.message || "Error duplicating task");
       }
@@ -169,12 +212,61 @@ export default function Tasks({filter, searchTerm=""}) {
       setTasks(updatedTasks);
       setSelectedTask({ ...selectedTask, name: editedName });
       setEditingName(false);
-      fetchTasks();
+      await initData();
     } catch (error) {
       setError(error?.response?.data?.message || "Error updating task name");
     }
   };
+  // const handleTagChange = (_, option) => {
+  //   if (!selectedTask) return;
+  //   setSelectedTask(prev => ({ ...prev, tag: option }));
+  // };
+  //
+  // const handleApplyTag = async () => {
+  //   if (!selectedTask) return;
+  //   const tagId = selectedTask.tag ? selectedTask.tag.id_tag : null;
+  //   try {
+  //     await api.post('/task/set-tags', { tasks: [selectedTask.id_task], id_tag: tagId });
+  //     const updatedTasks = tasks.map((t, i) =>
+  //         i === selectedTask.index ? { ...t, tag: selectedTask.tag } : t
+  //     );
+  //     setTasks(updatedTasks);
+  //   } catch (err) {
+  //     setError(err?.response?.data?.message || 'Error applying tag to task');
+  //   }
+  // };
+  const handleRemoveTag = async () => {
+    if (!selectedTask) return;
+    try {
+      await api.post('/task/set-tags', { tasks: [selectedTask.id_task] });
+      const updatedTasks = tasks.map((t, i) =>
+          i === selectedTask.index ? { ...t, tag: null } : t
+      );
+      setTasks(updatedTasks);
+      setSelectedTask(prev => ({ ...prev, tag: null }));
+    } catch (err) {
+      setError(err?.response?.data?.message || 'Error removing tag');
+    }
+  };
 
+  const handleTagChange = (_, option) => {
+    setTempTag(option);
+  };
+
+  const handleApplyTag = async () => {
+    if (!selectedTask) return;
+    const tagId = tempTag ? tempTag.id_tag : null;
+    try {
+      await api.post('/task/set-tags', { tasks: [selectedTask.id_task], id_tag: tagId });
+      const updatedTasks = tasks.map((t, i) =>
+          i === selectedTask.index ? { ...t, tag: tempTag } : t
+      );
+      setTasks(updatedTasks);
+      setSelectedTask(prev => ({ ...prev, tag: tempTag }));
+    } catch (err) {
+      setError(err?.response?.data?.message || 'Error applying tag to task');
+    }
+  };
   const formatDate = (date) => {
     return (
       date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) +
@@ -190,6 +282,9 @@ export default function Tasks({filter, searchTerm=""}) {
       .filter((t) => {
         if (filter === "completed") return t.completed;
         if (filter === "uncompleted") return !t.completed;
+        if (typeof filter === "number") {
+          return t.tag && t.tag.id_tag === filter;
+        }
         return true;
       })
       .filter((t) =>
@@ -205,8 +300,8 @@ export default function Tasks({filter, searchTerm=""}) {
           <div className="task-input-container">
             <input
                 type="text"
-                value={editedName}
-                onChange={(e) => setEditedName(e.target.value)}
+                value={newTask}
+                onChange={(e) => setNewTask(e.target.value)}
                 placeholder="Add new goal..."
                 className="task-input"
                 onKeyPress={(e) => e.key === "Enter" && handleAddTask()}
@@ -216,21 +311,17 @@ export default function Tasks({filter, searchTerm=""}) {
             </button>
           </div>
           <ul className="task-list-ul">
-            {filteredTasks.length === 0 ? (
-                <li className="task-empty">No goals to display</li>
-            ) : (
-                filteredTasks.map((task, index) => (
-                    <TaskItem
-                        key={task.id_task}
-                        index={index}
-                        task={task}
-                        isSelected={selectedTask?.index === index}
+            {filteredTasks.map((task, idx) => (
+                <TaskItem
+                    key={task.id_task}
+                    index={idx}
+                    task={task}
+                        isSelected={selectedTask?.idx === idx}
                         onToggle={handleToggleTask}
                         onSelect={handleSelectTask}
                         onDelete={handleDeleteTasks}
                     />
-                ))
-            )}
+                ))}
           </ul>
         </div>
         {/* Right side - task details */}
@@ -295,6 +386,33 @@ export default function Tasks({filter, searchTerm=""}) {
                     {selectedTask.description || "Click to add description..."}
                   </p>
               )}
+
+              {/* Display assigned tag below description */}
+              <div style={{marginTop: '16px'}}>
+                {selectedTask.tag ? (
+                    <Chip
+                        label={selectedTask.tag.name}
+                        onDelete={handleRemoveTag}
+                        style={{
+                          backgroundColor: selectedTask.tag.color,
+                          color: '#fff',
+                          padding: '6px 12px',
+                          fontSize: '0.95rem'
+                        }}
+                    />
+                ) : (
+                    <Chip
+                        label="No Tags"
+                        variant="outlined"
+                        style={{
+                          marginLeft: '0',
+                          fontStyle: 'italic',
+                          borderColor: '#f44336',
+                          color: '#f44336'
+                        }}
+                    />
+                )}
+              </div>
               <div className="task-date-container">
                 {/* Start Date */}
                 <div className="task-date">
@@ -357,8 +475,39 @@ export default function Tasks({filter, searchTerm=""}) {
                   Duplicate Task
                 </button>
               </div>
+              {/* Tag selector */}
+              <div className="task-tag-selector" style={{marginTop: '16px'}}>
+                <Stack direction="row" spacing={2} alignItems="center">
+                  <Autocomplete
+                      options={tags}
+                      getOptionLabel={(opt) => opt.name}
+                      value={selectedTask.tag || null}
+                      onChange={handleTagChange}
+                      renderInput={(params) => (
+                          <TextField
+                              {...params}
+                              label="Tag"
+                              variant="outlined"
+                              size="small"
+                              style={{minWidth: 200}}
+                          />
+                      )}
+                      clearOnEscape
+                  />
+
+                  <Button
+                      variant="contained"
+                      size="small"
+                      onClick={handleApplyTag}
+                      disabled={!selectedTask}
+                  >
+                    Apply Tag
+                  </Button>
+                </Stack>
+              </div>
             </div>
         )}
       </div>
-  );
+  )
+      ;
 }

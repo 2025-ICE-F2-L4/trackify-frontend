@@ -1,5 +1,6 @@
 import React from "react";
 import "./TaskItem.css";
+import {Chip} from "@mui/material";
 
 const formatDate = (isoString) => {
   const date = new Date(isoString);
@@ -31,6 +32,20 @@ const TaskItem = ({ task, index, isSelected, onToggle, onSelect }) => {
         <span className={`task-name ${task.completed ? "completed" : ""}`}>
           {task.name}
         </span>
+        {/* Display tag chip if present */}
+        {task.tag ? (
+            <Chip
+                label={task.tag.name}
+                size="small"
+                style={{
+                  marginLeft: '8px',
+                  backgroundColor: task.tag.color,
+                  color: '#fff',
+                  height: '24px',
+                  fontSize: '0.75rem'
+                }}
+            />
+        ) : null}
       </div>
 
       {/* Dates */}

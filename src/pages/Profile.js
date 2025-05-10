@@ -18,12 +18,11 @@ export default function Profile() {
   const [profile, setProfile] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [error, setError] = useState("");
-
-  // States for password change
-  const [isChangingPassword, setIsChangingPassword] = useState(false);
+  const [success, setSuccess] = useState("");
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
-  const [confirmNewPassword, setConfirmNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -42,188 +41,145 @@ export default function Profile() {
     fetchUserData();
   }, []);
 
+  const handleSave = async () => {
+    setError("");
+    setSuccess("");
+    if (!oldPassword || !newPassword || !confirmPassword) {
+      setError("Please fill in all password fields.");
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      setError("New passwords do not match.");
+      return;
+    }
+    setLoading(true);
+    try {
+      await api.post("/auth/change-password", { password: newPassword });
+      setSuccess("Password changed successfully.");
+      setIsEditing(false);
+      setOldPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+    } catch (err) {
+      console.error("Error changing password:", err);
+      const msg = err.response?.data?.message || "Failed to change password.";
+      setError(msg);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   if (!profile) {
     return (
-      <Container maxWidth="sm">
-        <Box className="loading-container">
-          <CircularProgress />
-        </Box>
-      </Container>
+        <Container maxWidth="sm">
+          <Box className="loading-container">
+            <CircularProgress />
+          </Box>
+        </Container>
     );
   }
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setProfile((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const handleSave = async () => {
-    // If user has opted to change the password, validate the password fields.
-    if (isChangingPassword) {
-      if (!oldPassword) {
-        setError("Please enter your old password.");
-        return;
-      }
-      if (!newPassword || !confirmNewPassword) {
-        setError("Please fill in the new password fields.");
-        return;
-      }
-      if (newPassword !== confirmNewPassword) {
-        setError("New passwords do not match.");
-        return;
-      }
-    }
-
-    // Build the update payload.
-    const updateData = {
-      username: profile.username,
-    };
-    if (isChangingPassword) {
-      updateData.oldPassword = oldPassword;
-      updateData.password = newPassword;
-    }
-
-    try {
-      const response = await api.put("/auth/me", updateData);
-      // Update the profile and global state using data from the response.
-      setProfile({
-        ...response.data,
-        profileImage: "profpic.png",
-      });
-      setUser(response.data);
-      setError("");
-      setIsEditing(false);
-      // Reset password change fields
-      setOldPassword("");
-      setNewPassword("");
-      setConfirmNewPassword("");
-      setIsChangingPassword(false);
-    } catch (err) {
-      console.error("Error updating user data:", err);
-      // If the backend returns an error message, display it.
-      setError(err.response?.data?.message || "Failed to update user data.");
-    }
-  };
-
   return (
-    <Container maxWidth="sm">
-      <Box className="profile-box">
-        <Avatar src={profile.profileImage} className="profile-avatar" />
+      <Container maxWidth="sm">
+        <Box className="profile-box">
+          <Avatar src={profile.profileImage} className="profile-avatar" />
 
-        <Typography
-          variant="h4"
-          component="h1"
-          align="center"
-          className="profile-title"
-        >
-          My Profile
-        </Typography>
-
-        {error && (
-          <Alert severity="error" className="profile-error">
-            {error}
-          </Alert>
-        )}
-
-        {isEditing ? (
-          <Box component="form" className="profile-form">
-            <TextField
-              margin="normal"
-              fullWidth
-              label="Username"
-              name="username"
-              value={profile.username}
-              onChange={handleChange}
-            />
-
-            {/* Email is displayed but not editable */}
-            <TextField
-              margin="normal"
-              fullWidth
-              label="Email"
-              name="email"
-              value={profile.email}
-              disabled
-            />
-
-            {/* Button to reveal password change fields */}
-            {!isChangingPassword && (
-              <Button
-                fullWidth
-                variant="outlined"
-                onClick={() => setIsChangingPassword(true)}
-                className="change-password-button"
-              >
-                Change password
-              </Button>
-            )}
-
-            {isChangingPassword && (
-              <Box className="password-fields">
-                <TextField
-                  margin="normal"
-                  fullWidth
-                  label="Old password"
-                  type="password"
-                  value={oldPassword}
-                  onChange={(e) => setOldPassword(e.target.value)}
-                />
-                <TextField
-                  margin="normal"
-                  fullWidth
-                  label="New password"
-                  type="password"
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                />
-                <TextField
-                  margin="normal"
-                  fullWidth
-                  label="Repeat new password"
-                  type="password"
-                  value={confirmNewPassword}
-                  onChange={(e) => setConfirmNewPassword(e.target.value)}
-                />
-              </Box>
-            )}
-
-            <Button
-              type="button"
-              fullWidth
-              variant="contained"
-              onClick={handleSave}
-              className="save-button"
-            >
-              Save Changes
-            </Button>
-          </Box>
-        ) : (
-          <Box className="profile-info">
-            <Typography variant="h6" align="center">
-              {profile.username}
-            </Typography>
-            <Typography
-              variant="body1"
+          <Typography
+              variant="h4"
+              component="h1"
               align="center"
-              className="profile-email"
-            >
-              {profile.email}
-            </Typography>
+              className="profile-title"
+          >
+            My Profile
+          </Typography>
 
-            <Button
-              fullWidth
-              variant="contained"
-              onClick={() => setIsEditing(true)}
-              className="edit-button"
-            >
-              Edit Profile
-            </Button>
-          </Box>
-        )}
-      </Box>
-    </Container>
+          {(error || success) && (
+              <Alert
+                  severity={error ? "error" : "success"}
+                  className="profile-error"
+              >
+                {error || success}
+              </Alert>
+          )}
+
+          {isEditing ? (
+              <Box component="form" className="profile-form">
+                {/* Old Password */}
+                <TextField
+                    margin="normal"
+                    fullWidth
+                    type="password"
+                    label="Old Password"
+                    value={oldPassword}
+                    onChange={(e) => setOldPassword(e.target.value)}
+                />
+
+                {/* New Password */}
+                <TextField
+                    margin="normal"
+                    fullWidth
+                    type="password"
+                    label="New Password"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                />
+
+                {/* Confirm Password */}
+                <TextField
+                    margin="normal"
+                    fullWidth
+                    type="password"
+                    label="Confirm New Password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                />
+
+                <Button
+                    type="button"
+                    fullWidth
+                    variant="contained"
+                    className="save-button"
+                    onClick={handleSave}
+                    disabled={loading}
+                >
+                  {loading ? <CircularProgress size={24} /> : "Save Changes"}
+                </Button>
+                <Button
+                    type="button"
+                    fullWidth
+                    variant="outlined"
+                    className="cancel-button"
+                    onClick={() => setIsEditing(false)}
+                    disabled={loading}
+                    sx={{ mt: 1 }}
+                >
+                  Cancel
+                </Button>
+              </Box>
+          ) : (
+              <Box className="profile-info">
+                <Typography variant="h6" align="center">
+                  {profile.username}
+                </Typography>
+                <Typography
+                    variant="body1"
+                    align="center"
+                    className="profile-email"
+                >
+                  {profile.email}
+                </Typography>
+
+                <Button
+                    fullWidth
+                    variant="contained"
+                    onClick={() => setIsEditing(true)}
+                    className="edit-button"
+                >
+                  Change Password
+                </Button>
+              </Box>
+          )}
+        </Box>
+      </Container>
   );
 }

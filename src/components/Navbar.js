@@ -52,15 +52,53 @@ export default function Navbar() {
           </Typography>
 
           <Box className="nav-buttons-container">
-            <Button onClick={handleRedirectToTasks} className="nav-button">
+            <Button onClick={handleRedirectToTasks}
+                    className="nav-button"
+                    variant="contained"
+                    size="large"
+                    sx={{
+                      mt: 4,
+                      backgroundColor: '#FFB300',
+                      color: '#6D4C41',
+                      textTransform: 'none',
+                      fontWeight: 'bold',
+                      '&:hover': {
+                        backgroundColor: '#E0A800',
+                      },
+                    }}>
               Tasks
             </Button>
 
-            <Button onClick={handleRedirectToProfile} className="nav-button">
+            <Button onClick={handleRedirectToProfile}
+                    className="nav-button"
+                    variant="contained"
+                    size="large"
+                    sx={{
+                      mt: 4,
+                      backgroundColor: '#FFB300',
+                      color: '#6D4C41',
+                      textTransform: 'none',
+                      fontWeight: 'bold',
+                      '&:hover': {
+                        backgroundColor: '#E0A800',
+                      },
+                    }}>
               Profile
             </Button>
 
-            <Button onClick={handleRedirectToLogout} className="logout-button">
+            <Button onClick={handleRedirectToLogout} className="nav-button"
+                    variant="contained"
+                    size="large"
+                    sx={{
+                      mt: 4,
+                      backgroundColor: '#FFB300',
+                      color: '#6D4C41',
+                      textTransform: 'none',
+                      fontWeight: 'bold',
+                      '&:hover': {
+                        backgroundColor: '#E0A800',
+                      },
+                    }}>
               Logout
             </Button>
           </Box>

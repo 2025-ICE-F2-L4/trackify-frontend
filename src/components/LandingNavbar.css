@@ -3,7 +3,7 @@
 .app-bar {
   background-color: var(--primary-bg) !important;
   width: 100%;
-  box-shadow: none;
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.3);
 }
 
 .nav-title {
@@ -20,28 +20,20 @@
   gap: 16px;
 }
 
-/* Zwiększ specyficzność dla przycisków */
 button.nav-button {
   margin: 16px 0;
-  color: white !important; /* Zapewnij biały kolor */
-  background-color: transparent;
+  color: black !important;
+  background-color: var(--hover-title);
   padding: 8px 16px;
   border-radius: 8px;
+  transition: background-color 0.3s;
 }
 
 button.nav-button:hover {
   background-color: rgba(255, 255, 255, 0.2);
+  color: white !important;
 }
 
-button.register-button {
-  margin: 16px 0;
-  color: white !important; /* Zapewnij biały kolor */
-  background-color: var(--accent-color);
-}
-
-button.register-button:hover {
-  background-color: #e3a02d;
-}
 
 .nav-buttons-container-mobile {
   display: flex;

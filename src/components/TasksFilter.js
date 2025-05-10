@@ -18,7 +18,6 @@ export default function TasksFilter({ filter, setFilter, searchTerm = "", setSea
     const [newTagName, setNewTagName] = useState("");
     const [newTagColor, setNewTagColor] = useState("#ffffff");
 
-    // Load tags from API
     const loadTags = async () => {
         try {
             const response = await api.get('/tag');
@@ -94,9 +93,9 @@ export default function TasksFilter({ filter, setFilter, searchTerm = "", setSea
             <div className="filter-tags">
                 {tags.map(tag => (
                     <button
-                        key={tag.id}
-                        className={filter === tag.id ? "active tag-button" : "tag-button"}
-                        onClick={() => setFilter(tag.id)}
+                        key={tag.id_tag}
+                        className={filter === tag.id_tag ? "active tag-button" : "tag-button"}
+                        onClick={() => setFilter(tag.id_tag)}
                         style={{ backgroundColor: tag.color }}
                     >
                         {tag.name}
@@ -132,3 +131,4 @@ export default function TasksFilter({ filter, setFilter, searchTerm = "", setSea
         </div>
     );
 }
+

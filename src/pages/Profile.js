@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { render } from "react-dom";
 import { useUser } from "../context/UserContext";
 import api from "../api";
 import moment from "moment";
@@ -14,6 +13,9 @@ import {
   Alert,
   Avatar,
   CircularProgress,
+  List,
+  ListItem,
+  ListItemText,
 } from "@mui/material";
 import "./Profile.css";
 
@@ -25,6 +27,7 @@ export default function Profile() {
   const [profile, setProfile] = useState(null);
   const [tasks, setTasks] = useState([]);
   const [events, setEvents] = useState([]);
+  const [reports, setReports] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -55,9 +58,8 @@ export default function Profile() {
     const fetchTasks = async () => {
       try {
         const response = await api.get("/task");
-        const tasksArray = response.data.tasks; // API returns { tasks: [...] }
+        const tasksArray = response.data.tasks;
         setTasks(tasksArray);
-        // Map tasks to calendar events
         const mapped = tasksArray.map(task => ({
           id: task.id_task,
           title: task.name,
@@ -70,6 +72,19 @@ export default function Profile() {
       }
     };
     fetchTasks();
+  }, []);
+
+  // Fetch weekly reports
+  useEffect(() => {
+    const fetchReports = async () => {
+      try {
+        const response = await api.get("/task/report/week");
+        setReports(response.data.reports || []);
+      } catch (err) {
+        console.error("Error fetching reports:", err);
+      }
+    };
+    fetchReports();
   }, []);
 
   const handleSave = async () => {
@@ -177,14 +192,43 @@ export default function Profile() {
                 </Button>
               </Box>
           )}
+          {/* Weekly Reports section below profile */}
+          <Box className="reports-box" sx={{
+            mt: 2,
+            mx: 2,
+            p: 2,
+            width: "100%",
+            border: '1px solid #ddd',
+            borderRadius: 1
+          }}>
+            <Typography variant="h6" gutterBottom>
+              Weekly Reports
+            </Typography>
+            {reports.length === 0 ? (
+                <Typography variant="body2">No reports available.</Typography>
+            ) : (
+                <List>
+                  {reports.map((report) => (
+                      <ListItem key={report.weekStartDate} divider>
+                        <ListItemText
+                            primary={`Week of ${moment(report.weekStartDate).format("DD MMM YYYY")}`}
+                            secondary={`Tasks Completed: ${report.completedTasks}, Hours Logged: ${report.loggedHours}`}
+                        />
+                      </ListItem>
+                  ))}
+                </List>
+            )}
+          </Box>
         </Box>
-
         {/* Calendar section */}
-        <Box sx={{
-          marginLeft: 60,
-          width: "70%",
-          height: 700,
-          mt: 4 }}>
+        <Box
+            sx={{
+              marginLeft: 60,
+              width: "70%",
+              height: 700,
+              mt: 4
+            }}
+        >
           <Calendar
               localizer={localizer}
               events={events}

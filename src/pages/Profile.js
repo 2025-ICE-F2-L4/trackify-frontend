@@ -51,8 +51,9 @@ export default function Profile() {
       setEvents(mapped);
     }).catch(console.error);
 
-    api.get("/task/report/week").then(res => setReports(res.data.reports || [])).catch(console.error);
-
+    api.get("/task/report/week")
+        .then(res => setReports(res.data.tasksStats || []))
+        .catch(console.error);
     // Fetch chart endpoints
     Promise.all([
       api.get('/chart/completed'),
@@ -194,11 +195,12 @@ const handleSave = async () => {
                 <Typography variant="body2">No reports available.</Typography>
             ) : (
                 <List>
-                  {reports.map((report) => (
-                      <ListItem key={report.weekStartDate} divider>
+                  {reports.map((stat, i) => (
+                      <ListItem key={i} divider>
                         <ListItemText
-                            primary={`Week of ${moment(report.weekStartDate).format("DD MMM YYYY")}`}
-                            secondary={`Tasks Completed: ${report.completedTasks}, Hours Logged: ${report.loggedHours}`}
+                            primary={`${stat.tagName} (${stat.total} tasks)`}
+                            secondary={`${stat.finished || 0} finished / ${(stat.total - (stat.finished||0))} unfinished`}
+                            style={{ color: stat.color }}
                         />
                       </ListItem>
                   ))}
@@ -206,6 +208,7 @@ const handleSave = async () => {
             )}
           </Box>
         </Box>
+
         {/* Calendar section */}
         <Box
             sx={{
@@ -227,7 +230,7 @@ const handleSave = async () => {
         </Box>
 
         {/* Charts section */}
-        <Box sx={{ mt:4,mx:4,display:'grid',gridTemplateColumns:'1fr 1fr',gap:4 }}>
+        <Box sx={{ mt:15,mx:4,display:'grid',gridTemplateColumns:'1fr 1fr',gap:4 }}>
           <Box>
             <Typography variant="h6">Task Completion Status</Typography>
             <PieChart

@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { useUser } from "../context/UserContext";
 import api from "../api";
 import moment from "moment";
 import { Calendar, momentLocalizer, Views } from "react-big-calendar";
@@ -17,17 +16,19 @@ import {
   ListItem,
   ListItemText,
 } from "@mui/material";
+import { BarChart, LineChart, PieChart } from '@mui/x-charts';
 import "./Profile.css";
 
 moment.locale("en-GB");
 const localizer = momentLocalizer(moment);
 
 export default function Profile() {
-  const { setUser } = useUser();
   const [profile, setProfile] = useState(null);
-  const [tasks, setTasks] = useState([]);
   const [events, setEvents] = useState([]);
   const [reports, setReports] = useState([]);
+  const [completedStats, setCompletedStats] = useState({ finished: 0, unfinished: 0 });
+  const [weeklyData, setWeeklyData] = useState([]);
+  const [monthlyData, setMonthlyData] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -36,58 +37,43 @@ export default function Profile() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // Fetch user profile
   useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const response = await api.get("/auth/me");
-        setProfile({
-          ...response.data,
-          profileImage: "profpic.png",
-        });
-      } catch (err) {
-        console.error("Error fetching user data:", err);
-        setError("Failed to fetch user data.");
-      }
-    };
-    fetchUserData();
+    api.get("/auth/me").then(res => setProfile({ ...res.data, profileImage: "profpic.png" }))
+        .catch(() => setError("Failed to fetch user data."));
+
+    api.get("/task").then(res => {
+      const mapped = res.data.tasks.map(task => ({
+        id: task.id_task,
+        title: task.name,
+        start: new Date(task.startedAt),
+        end: task.finishedAt ? new Date(task.finishedAt) : new Date(task.startedAt),
+      }));
+      setEvents(mapped);
+    }).catch(console.error);
+
+    api.get("/task/report/week").then(res => setReports(res.data.reports || [])).catch(console.error);
+
+    // Fetch chart endpoints
+    Promise.all([
+      api.get('/chart/completed'),
+      api.get('/chart/weekly'),
+      api.get('/chart/monthly'),
+    ]).then(([cRes, wRes, mRes]) => {
+      // Completed stats: object with finished_tasks and unfinished_tasks
+      const { finished_tasks, unfinished_tasks } = cRes.data;
+      setCompletedStats({ finished: finished_tasks, unfinished: unfinished_tasks });
+
+      // Weekly: array of [day_name, completed_tasks]
+      setWeeklyData(wRes.data.map(item => [item.day_name, item.completed_tasks]));
+
+      // Monthly: { labels: [...], values: [...] }
+      const labels = mRes.data.labels;
+      const values = mRes.data.values;
+      setMonthlyData(labels.map((lbl, idx) => [new Date(lbl).getTime(), values[idx]]));
+    }).catch(console.error);
   }, []);
 
-  // Fetch tasks and map to calendar events
-  useEffect(() => {
-    const fetchTasks = async () => {
-      try {
-        const response = await api.get("/task");
-        const tasksArray = response.data.tasks;
-        setTasks(tasksArray);
-        const mapped = tasksArray.map(task => ({
-          id: task.id_task,
-          title: task.name,
-          start: new Date(task.startedAt),
-          end: task.finishedAt ? new Date(task.finishedAt) : new Date(task.startedAt),
-        }));
-        setEvents(mapped);
-      } catch (err) {
-        console.error("Error fetching tasks:", err);
-      }
-    };
-    fetchTasks();
-  }, []);
-
-  // Fetch weekly reports
-  useEffect(() => {
-    const fetchReports = async () => {
-      try {
-        const response = await api.get("/task/report/week");
-        setReports(response.data.reports || []);
-      } catch (err) {
-        console.error("Error fetching reports:", err);
-      }
-    };
-    fetchReports();
-  }, []);
-
-  const handleSave = async () => {
+const handleSave = async () => {
     setError("");
     setSuccess("");
     if (!oldPassword || !newPassword || !confirmPassword) {
@@ -238,6 +224,34 @@ export default function Profile() {
               popup={false}
               onSelectEvent={(event) => alert(`Task: ${event.title}`)}
           />
+        </Box>
+
+        {/* Charts section */}
+        <Box sx={{ mt:4,mx:4,display:'grid',gridTemplateColumns:'1fr 1fr',gap:4 }}>
+          <Box>
+            <Typography variant="h6">Task Completion Status</Typography>
+            <PieChart
+                series={[{ data: [{ id: 'Finished', value: completedStats.finished }, { id: 'Unfinished', value: completedStats.unfinished }] }]}
+                valueAccessor={({ datum }) => datum.value}
+                argumentAccessor={({ datum }) => datum.id}
+            />
+          </Box>
+
+          <Box>
+            <Typography variant="h6">Weekly Completion</Typography>
+            <BarChart
+                series={[{ data: weeklyData }]}
+                axes={[{ primary:true,type:'category',position:'bottom' },{ type:'linear',position:'left' } ]}
+            />
+          </Box>
+
+          <Box sx={{ gridColumn:'1 / -1' }}>
+            <Typography variant="h6">Monthly Trends</Typography>
+            <LineChart
+                series={[{ data: monthlyData }]}
+                axes={[{ primary:true,type:'time',position:'bottom' },{ type:'linear',position:'left' } ]}
+            />
+          </Box>
         </Box>
       </Container>
   );

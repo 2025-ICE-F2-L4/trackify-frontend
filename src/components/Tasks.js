@@ -72,11 +72,15 @@ export default function Tasks({filter, searchTerm=""}) {
             };
           }
         }
+        const startedAt = t.startedAt ? new Date(t.startedAt) : null;
+        const finishedAt = t.finishedAt ? new Date(t.finishedAt) : null;
 
         return {
           ...t,
           completed: !!t.finishedAt,
           tag: tagObj,
+          startedAt,
+          finishedAt,
         };
       });
 
@@ -155,11 +159,18 @@ export default function Tasks({filter, searchTerm=""}) {
     setEditMode(false);
   };
 
-  const handleDateChange = (date, field) => {
+  const handleDateChange = async (date, field) => {
     const updatedTasks = [...tasks];
     updatedTasks[selectedTask.index][field] = date;
     setTasks(updatedTasks);
     setSelectedTask({ ...selectedTask, [field]: date });
+    try {
+      await api.put(`/task/${selectedTask.id_task}`, {
+        [field]: date.toISOString()
+      });
+    } catch (err) {
+      console.error("Failed to save date:", err);
+    }
   };
 
   useEffect(() => {
@@ -426,7 +437,8 @@ export default function Tasks({filter, searchTerm=""}) {
                       dateFormat="HH:mm dd-MM-yyyy"
                       customInput={
                         <div className="task-datepicker">
-                          {formatDate(new Date(selectedTask.startedAt))}
+                          {/*{formatDate(new Date(selectedTask.startedAt))}*/}
+                          {selectedTask.startedAt && formatDate(selectedTask.startedAt)}
                         </div>
                       }
                   />

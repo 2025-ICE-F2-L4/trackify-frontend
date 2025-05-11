@@ -1,16 +1,19 @@
-/* src/pages/Profile.css */
-
 .profile-box {
+  position: absolute !important;
+  top: 16px !important;
+  left: 16px !important;
   margin-top: 64px !important;
   padding: 32px !important;
-  background-color: #fff !important; /* background.paper w domyślnym theme Material-UI */
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2) !important; /* Odpowiednik boxShadow: 3 */
+  background-color: #fff !important;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2) !important;
   border-radius: 8px !important;
+
   display: flex !important;
   flex-direction: column !important;
   align-items: center !important;
+  width: 320px !important;
+  z-index: 10 !important;
 }
-
 .profile-avatar {
   width: 120px !important;
   height: 120px !important;
@@ -87,4 +90,12 @@ button.edit-button:hover {
   display: flex !important;
   justify-content: center !important;
   margin-top: 64px !important;
+}
+/* Profile.css */
+.calendar-container .MuiCalendarPicker-root {
+  width: 280px;
+}
+
+.tasks-list {
+  flex: 1;
 }

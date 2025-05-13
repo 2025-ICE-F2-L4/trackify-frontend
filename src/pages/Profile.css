@@ -1,101 +1,101 @@
 .profile-box {
-  position: absolute !important;
-  top: 16px !important;
-  left: 16px !important;
-  margin-top: 64px !important;
-  padding: 32px !important;
-  background-color: #fff !important;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2) !important;
-  border-radius: 8px !important;
+    position: absolute !important;
+    top: 16px !important;
+    left: 16px !important;
+    margin-top: 124px !important;
+    padding: 32px !important;
+    background-color: #fff !important;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2) !important;
+    border-radius: 8px !important;
 
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: center !important;
-  width: 320px !important;
-  z-index: 10 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    width: 320px !important;
+    z-index: 10 !important;
 }
 .profile-avatar {
-  width: 120px !important;
-  height: 120px !important;
-  border: 3px solid #6d4c41 !important;
-  margin-bottom: 16px !important;
+    width: 120px !important;
+    height: 120px !important;
+    border: 3px solid #6d4c41 !important;
+    margin-bottom: 16px !important;
 }
 
 .profile-title {
-  text-align: center !important;
-  margin-bottom: 16px !important; /* gutterBottom w Typography */
+    text-align: center !important;
+    margin-bottom: 16px !important; /* gutterBottom w Typography */
 }
 
 .profile-error {
-  margin-bottom: 16px !important;
-  width: 100% !important;
+    margin-bottom: 16px !important;
+    width: 100% !important;
 }
 
 .profile-form {
-  margin-top: 8px !important;
-  width: 100% !important;
+    margin-top: 8px !important;
+    width: 100% !important;
 }
 
 button.change-password-button {
-  margin: 16px 0 !important;
-  background-color: #fff !important;
-  border: 1px solid #6d4c41 !important;
-  color: #6d4c41 !important;
-  padding: 8px 16px !important; /* Domyślne paddingi dla Button variant="outlined" */
-  border-radius: 4px !important;
-  text-transform: uppercase !important;
-  font-weight: 500 !important;
-  cursor: pointer !important;
+    margin: 16px 0 !important;
+    background-color: #fff !important;
+    border: 1px solid #6d4c41 !important;
+    color: #6d4c41 !important;
+    padding: 8px 16px !important; /* Domyślne paddingi dla Button variant="outlined" */
+    border-radius: 4px !important;
+    text-transform: uppercase !important;
+    font-weight: 500 !important;
+    cursor: pointer !important;
 }
 
 button.change-password-button:hover {
-  background-color: #f5f5f5 !important;
+    background-color: #f5f5f5 !important;
 }
 
 .password-fields {
-  margin-top: 16px !important;
-  width: 100% !important;
+    margin-top: 16px !important;
+    width: 100% !important;
 }
 
 button.save-button,
 button.edit-button {
-  margin: 24px 0 16px !important;
-  background-color: #6d4c41 !important;
-  color: #fff !important;
-  padding: 8px 16px !important; /* Domyślne paddingi dla Button variant="contained" */
-  border: none !important;
-  border-radius: 4px !important;
-  text-transform: uppercase !important;
-  font-weight: 500 !important;
-  cursor: pointer !important;
+    margin: 24px 0 16px !important;
+    background-color: #6d4c41 !important;
+    color: #fff !important;
+    padding: 8px 16px !important; /* Domyślne paddingi dla Button variant="contained" */
+    border: none !important;
+    border-radius: 4px !important;
+    text-transform: uppercase !important;
+    font-weight: 500 !important;
+    cursor: pointer !important;
 }
 
 button.save-button:hover,
 button.edit-button:hover {
-  background-color: #5c4033 !important;
+    background-color: #5c4033 !important;
 }
 
 .profile-info {
-  margin-top: 24px !important;
-  width: 100% !important;
+    margin-top: 24px !important;
+    width: 100% !important;
 }
 
 .profile-email {
-  color: #6b7280 !important; /* text.secondary w domyślnym theme Material-UI */
-  margin-bottom: 24px !important;
-  text-align: center !important;
+    color: #6b7280 !important; /* text.secondary w domyślnym theme Material-UI */
+    margin-bottom: 24px !important;
+    text-align: center !important;
 }
 
 .loading-container {
-  display: flex !important;
-  justify-content: center !important;
-  margin-top: 64px !important;
+    display: flex !important;
+    justify-content: center !important;
+    margin-top: 64px !important;
 }
 /* Profile.css */
 .calendar-container .MuiCalendarPicker-root {
-  width: 280px;
+    width: 280px;
 }
 
 .tasks-list {
-  flex: 1;
+    flex: 1;
 }

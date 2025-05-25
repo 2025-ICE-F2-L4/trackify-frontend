@@ -61,6 +61,7 @@ export default function Profile() {
                     end: task.finishedAt
                         ? new Date(task.finishedAt)
                         : new Date(task.startedAt),
+                    color: task.tagColor || "#1976d2" // default if missing
                 }));
                 setEvents(mapped);
             })
@@ -291,7 +292,17 @@ export default function Profile() {
                     defaultDate={new Date()}
                     popup={false}
                     onSelectEvent={(event) => alert(`Task: ${event.title}`)}
+                    eventPropGetter={(event) => ({
+                        style: {
+                            backgroundColor: event.color,
+                            color: "white",
+                            borderRadius: "4px",
+                            border: "none",
+                            padding: "2px 5px"
+                        }
+                    })}
                 />
+
             </Box>
 
             {/* Charts section */}
